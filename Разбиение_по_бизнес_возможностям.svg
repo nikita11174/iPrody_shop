@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1220" viewBox="0 0 1800 1220">
+    <style>
+      .title { font: 700 24px Arial, sans-serif; fill: #1f2937; }
+      .subtitle { font: 600 15px Arial, sans-serif; fill: #374151; }
+      .box-title { font: 700 14px Arial, sans-serif; fill: #111827; }
+      .box-text { font: 13px Arial, sans-serif; fill: #1f2937; }
+      .small { font: 12px Arial, sans-serif; fill: #374151; }
+      .box { fill: #ffffff; stroke: #334155; stroke-width: 1.4; rx: 14; ry: 14; }
+      .core { fill: #e0f2fe; }
+      .support { fill: #ecfccb; }
+      .generic { fill: #fef3c7; }
+      .root { fill: #dbeafe; }
+      .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.2; rx: 18; ry: 18; }
+      .line { stroke: #64748b; stroke-width: 1.5; fill: none; }
+      .arrow { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 6 5; }
+    </style>
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+      </marker>
+    </defs>
+<rect x="0" y="0" width="1800" height="1220" class="group" style="fill:#f8fafc;stroke:#cbd5e1;stroke-width:1"/>
+<text x="900.0" y="40" class="title" text-anchor="middle">Интернет-магазин — декомпозиция по бизнес-возможностям</text>
+<text x="900.0" y="72" class="subtitle" text-anchor="middle"><tspan x="900.0" dy="0">Разделение на capability-блоки без привязки к технической реализации</tspan><tspan x="900.0" dy="17">и структуре микросервисов</tspan></text>
+<rect x="700" y="100" width="400" height="70" class="box root" />
+<text x="900.0" y="140" class="box-title" text-anchor="middle">Интернет-магазин</text>
+<path d="M 900.0 170 L 900.0 210 L 230.0 210 L 230.0 250" class="line"/>
+<rect x="80" y="250" width="300" height="230" class="box" />
+<text x="230.0" y="278" class="box-title" text-anchor="middle">Каталог и контент</text>
+<text x="100" y="315" class="box-text" text-anchor="start">• Категории</text>
+<text x="100" y="345" class="box-text" text-anchor="start">• Карточки товаров</text>
+<text x="100" y="375" class="box-text" text-anchor="start">• Характеристики</text>
+<text x="100" y="405" class="box-text" text-anchor="start">• Медиа-контент</text>
+<text x="100" y="435" class="box-text" text-anchor="start">• Отзывы и рейтинг</text>
+<path d="M 900.0 170 L 900.0 210 L 570.0 210 L 570.0 250" class="line"/>
+<rect x="420" y="250" width="300" height="230" class="box" />
+<text x="570.0" y="278" class="box-title" text-anchor="middle">Поиск и discovery</text>
+<text x="440" y="315" class="box-text" text-anchor="start">• Поиск</text>
+<text x="440" y="345" class="box-text" text-anchor="start">• Фильтрация</text>
+<text x="440" y="375" class="box-text" text-anchor="start">• Сортировка</text>
+<text x="440" y="405" class="box-text" text-anchor="start">• Рекомендации</text>
+<text x="440" y="435" class="box-text" text-anchor="start">• Навигация по витрине</text>
+<path d="M 900.0 170 L 900.0 210 L 910.0 210 L 910.0 250" class="line"/>
+<rect x="760" y="250" width="300" height="230" class="box" />
+<text x="910.0" y="278" class="box-title" text-anchor="middle">Цены и промо</text>
+<text x="780" y="315" class="box-text" text-anchor="start">• Базовые цены</text>
+<text x="780" y="345" class="box-text" text-anchor="start">• Акции</text>
+<text x="780" y="375" class="box-text" text-anchor="start">• Купоны</text>
+<text x="780" y="405" class="box-text" text-anchor="start">• Персональные скидки</text>
+<text x="780" y="435" class="box-text" text-anchor="start">• Правила расчёта цены</text>
+<path d="M 900.0 170 L 900.0 210 L 1250.0 210 L 1250.0 250" class="line"/>
+<rect x="1100" y="250" width="300" height="230" class="box" />
+<text x="1250.0" y="278" class="box-title" text-anchor="middle">Клиенты и лояльность</text>
+<text x="1120" y="315" class="box-text" text-anchor="start">• Профиль клиента</text>
+<text x="1120" y="345" class="box-text" text-anchor="start">• Адреса</text>
+<text x="1120" y="375" class="box-text" text-anchor="start">• История покупок</text>
+<text x="1120" y="405" class="box-text" text-anchor="start">• Сегменты</text>
+<text x="1120" y="435" class="box-text" text-anchor="start">• Бонусы / лояльность</text>
+<path d="M 900.0 170 L 900.0 210 L 1590.0 210 L 1590.0 250" class="line"/>
+<rect x="1440" y="250" width="300" height="230" class="box" />
+<text x="1590.0" y="278" class="box-title" text-anchor="middle">Корзина и checkout</text>
+<text x="1460" y="315" class="box-text" text-anchor="start">• Корзина</text>
+<text x="1460" y="345" class="box-text" text-anchor="start">• Проверка состава</text>
+<text x="1460" y="375" class="box-text" text-anchor="start">• Выбор доставки</text>
+<text x="1460" y="405" class="box-text" text-anchor="start">• Выбор оплаты</text>
+<text x="1460" y="435" class="box-text" text-anchor="start">• Подтверждение заказа</text>
+<path d="M 900.0 170 L 900.0 190 L 900 190 L 900 560 L 400.0 560 L 400.0 620" class="line"/>
+<rect x="250" y="620" width="300" height="230" class="box" />
+<text x="400.0" y="648" class="box-title" text-anchor="middle">Заказы</text>
+<text x="270" y="685" class="box-text" text-anchor="start">• Создание заказа</text>
+<text x="270" y="715" class="box-text" text-anchor="start">• Жизненный цикл заказа</text>
+<text x="270" y="745" class="box-text" text-anchor="start">• Изменение статусов</text>
+<text x="270" y="775" class="box-text" text-anchor="start">• Возвраты</text>
+<text x="270" y="805" class="box-text" text-anchor="start">• Отмена заказа</text>
+<path d="M 900.0 170 L 900.0 190 L 900 190 L 900 560 L 740.0 560 L 740.0 620" class="line"/>
+<rect x="590" y="620" width="300" height="230" class="box" />
+<text x="740.0" y="648" class="box-title" text-anchor="middle">Оплата</text>
+<text x="610" y="685" class="box-text" text-anchor="start">• Инициация платежа</text>
+<text x="610" y="715" class="box-text" text-anchor="start">• Авторизация/списание</text>
+<text x="610" y="745" class="box-text" text-anchor="start">• Платёжные статусы</text>
+<text x="610" y="775" class="box-text" text-anchor="start">• Чеки / инвойсы</text>
+<text x="610" y="805" class="box-text" text-anchor="start">• Возвраты денег</text>
+<path d="M 900.0 170 L 900.0 190 L 900 190 L 900 560 L 1080.0 560 L 1080.0 620" class="line"/>
+<rect x="930" y="620" width="300" height="230" class="box" />
+<text x="1080.0" y="648" class="box-title" text-anchor="middle">Склад и остатки</text>
+<text x="950" y="685" class="box-text" text-anchor="start">• Остатки</text>
+<text x="950" y="715" class="box-text" text-anchor="start">• Резервирование</text>
+<text x="950" y="745" class="box-text" text-anchor="start">• Склады</text>
+<text x="950" y="775" class="box-text" text-anchor="start">• Комплектация</text>
+<text x="950" y="805" class="box-text" text-anchor="start">• Списание</text>
+<path d="M 900.0 170 L 900.0 190 L 900 190 L 900 560 L 1420.0 560 L 1420.0 620" class="line"/>
+<rect x="1270" y="620" width="300" height="230" class="box" />
+<text x="1420.0" y="648" class="box-title" text-anchor="middle">Доставка и фулфилмент</text>
+<text x="1290" y="685" class="box-text" text-anchor="start">• Отгрузка</text>
+<text x="1290" y="715" class="box-text" text-anchor="start">• Службы доставки</text>
+<text x="1290" y="745" class="box-text" text-anchor="start">• Трекинг</text>
+<text x="1290" y="775" class="box-text" text-anchor="start">• ПВЗ / курьер</text>
+<text x="1290" y="805" class="box-text" text-anchor="start">• Возврат доставки</text>
+<path d="M 900.0 170 L 900.0 190 L 900 190 L 900 900 L 900.0 900 L 900.0 960" class="line"/>
+<rect x="610" y="960" width="580" height="190" class="box" />
+<text x="900.0" y="988" class="box-title" text-anchor="middle">Коммуникации и поддержка</text>
+<text x="630" y="1025" class="box-text" text-anchor="start">• Уведомления</text>
+<text x="630" y="1055" class="box-text" text-anchor="start">• Обращения в поддержку</text>
+<text x="630" y="1085" class="box-text" text-anchor="start">• E-mail / SMS / push</text>
+<text x="630" y="1115" class="box-text" text-anchor="start">• Шаблоны сообщений</text>
+<text x="630" y="1145" class="box-text" text-anchor="start">• Опросы и обратная связь</text>
+<rect x="70" y="1030" width="410" height="130" class="box" />
+<text x="275" y="1060" class="box-title" text-anchor="middle">Принцип разбиения</text>
+<text x="90" y="1090" class="small" text-anchor="start">1. Выделены устойчивые бизнес-возможности интернет-магазина.</text>
+<text x="90" y="1112" class="small" text-anchor="start">2. Каждая возможность может развиваться независимо.</text>
+<text x="90" y="1134" class="small" text-anchor="start">3. Такой слой удобен для перехода к сервисной или DDD-декомпозиции.</text>
+<rect x="1320" y="980" width="410" height="180" class="box" />
+<text x="1525" y="1010" class="box-title" text-anchor="middle">Типовой бизнес-поток</text>
+<text x="1345" y="1045" class="small" text-anchor="start">Каталог → Поиск → Цена → Корзина → Заказ → Оплата →</text>
+<text x="1345" y="1069" class="small" text-anchor="start">Резервирование → Отгрузка → Доставка → Уведомления</text>
+<text x="1345" y="1093" class="small" text-anchor="start"></text>
+<text x="1345" y="1117" class="small" text-anchor="start">Поддержка и лояльность работают сквозным образом.</text>
+</svg>

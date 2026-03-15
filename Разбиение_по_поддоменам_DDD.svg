@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1460" viewBox="0 0 2200 1460">
+    <style>
+      .title { font: 700 26px Arial, sans-serif; fill: #1f2937; }
+      .subtitle { font: 600 16px Arial, sans-serif; fill: #374151; }
+      .box-title { font: 700 15px Arial, sans-serif; fill: #111827; }
+      .box-text { font: 13px Arial, sans-serif; fill: #1f2937; }
+      .small { font: 12px Arial, sans-serif; fill: #374151; }
+      .tiny { font: 11px Arial, sans-serif; fill: #475569; }
+      .box { fill: #ffffff; stroke: #334155; stroke-width: 1.4; rx: 14; ry: 14; }
+      .core { fill: #e0f2fe; }
+      .support { fill: #ecfccb; }
+      .generic { fill: #fef3c7; }
+      .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.2; rx: 18; ry: 18; }
+      .arrow { stroke: #475569; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 7 5; }
+      .labelbg { fill: #f8fafc; }
+    </style>
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+      </marker>
+    </defs>
+    <rect x="0" y="0" width="2200" height="1460" class="group" style="fill:#f8fafc;stroke:#cbd5e1;stroke-width:1"/>
+    <text x="1100.0" y="42" class="title" text-anchor="middle">Интернет-магазин — декомпозиция по поддоменам (DDD)</text>
+    <text x="1100.0" y="74" class="subtitle" text-anchor="middle">Bounded Contexts, основные Aggregate / Entity / Value Object и взаимодействия между контекстами</text>
+
+    <rect x="60" y="130" width="400" height="300" class="box core"/>
+    <text x="260" y="156" class="box-title" text-anchor="middle">Catalog Context</text>
+    <text x="260" y="178" class="small" text-anchor="middle">Поддомен: Core</text>
+    <text x="78" y="212" class="box-text" text-anchor="start">Aggregate: Product</text>
+    <text x="78" y="244" class="box-title" text-anchor="start">Entity:</text>
+    <text x="92" y="268" class="small" text-anchor="start">• Product</text>
+    <text x="92" y="292" class="small" text-anchor="start">• Category</text>
+    <text x="78" y="324" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="92" y="348" class="small" text-anchor="start">• SKU</text>
+    <text x="92" y="372" class="small" text-anchor="start">• Attributes</text>
+    <text x="92" y="396" class="small" text-anchor="start">• MediaSet</text>
+
+    <rect x="520" y="130" width="400" height="300" class="box support"/>
+    <text x="720" y="156" class="box-title" text-anchor="middle">Pricing Context</text>
+    <text x="720" y="178" class="small" text-anchor="middle">Поддомен: Supporting</text>
+    <text x="538" y="212" class="box-text" text-anchor="start">Aggregate: PricePolicy</text>
+    <text x="538" y="244" class="box-title" text-anchor="start">Entity:</text>
+    <text x="552" y="268" class="small" text-anchor="start">• Price</text>
+    <text x="552" y="292" class="small" text-anchor="start">• Promotion</text>
+    <text x="552" y="316" class="small" text-anchor="start">• Coupon</text>
+    <text x="538" y="348" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="552" y="372" class="small" text-anchor="start">• Money</text>
+    <text x="552" y="396" class="small" text-anchor="start">• DiscountRule</text>
+    <text x="552" y="420" class="small" text-anchor="start">• ValidityPeriod</text>
+
+    <rect x="980" y="130" width="400" height="300" class="box support"/>
+    <text x="1180" y="156" class="box-title" text-anchor="middle">Customer Context</text>
+    <text x="1180" y="178" class="small" text-anchor="middle">Поддомен: Supporting</text>
+    <text x="998" y="212" class="box-text" text-anchor="start">Aggregate: Customer</text>
+    <text x="998" y="244" class="box-title" text-anchor="start">Entity:</text>
+    <text x="1012" y="268" class="small" text-anchor="start">• Customer</text>
+    <text x="998" y="300" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="1012" y="324" class="small" text-anchor="start">• CustomerId</text>
+    <text x="1012" y="348" class="small" text-anchor="start">• Address</text>
+    <text x="1012" y="372" class="small" text-anchor="start">• ContactInfo</text>
+
+    <rect x="1440" y="130" width="400" height="300" class="box core"/>
+    <text x="1640" y="156" class="box-title" text-anchor="middle">Cart Context</text>
+    <text x="1640" y="178" class="small" text-anchor="middle">Поддомен: Core</text>
+    <text x="1458" y="212" class="box-text" text-anchor="start">Aggregate: Cart</text>
+    <text x="1458" y="244" class="box-title" text-anchor="start">Entity:</text>
+    <text x="1472" y="268" class="small" text-anchor="start">• Cart</text>
+    <text x="1472" y="292" class="small" text-anchor="start">• CartItem</text>
+    <text x="1458" y="324" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="1472" y="348" class="small" text-anchor="start">• Quantity</text>
+    <text x="1472" y="372" class="small" text-anchor="start">• SelectedOffer</text>
+
+    <rect x="290" y="530" width="420" height="300" class="box support"/>
+    <text x="500" y="556" class="box-title" text-anchor="middle">Inventory Context</text>
+    <text x="500" y="578" class="small" text-anchor="middle">Поддомен: Supporting</text>
+    <text x="308" y="612" class="box-text" text-anchor="start">Aggregate: StockItem</text>
+    <text x="308" y="644" class="box-title" text-anchor="start">Entity:</text>
+    <text x="322" y="668" class="small" text-anchor="start">• StockItem</text>
+    <text x="322" y="692" class="small" text-anchor="start">• Reservation</text>
+    <text x="322" y="716" class="small" text-anchor="start">• Warehouse</text>
+    <text x="308" y="748" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="322" y="772" class="small" text-anchor="start">• StockQuantity</text>
+    <text x="322" y="796" class="small" text-anchor="start">• ReservationWindow</text>
+    <text x="322" y="820" class="small" text-anchor="start">• SKU</text>
+
+    <rect x="890" y="500" width="420" height="330" class="box core"/>
+    <text x="1100" y="526" class="box-title" text-anchor="middle">Order Context</text>
+    <text x="1100" y="548" class="small" text-anchor="middle">Поддомен: Core</text>
+    <text x="908" y="582" class="box-text" text-anchor="start">Aggregate: Order</text>
+    <text x="908" y="614" class="box-title" text-anchor="start">Entity:</text>
+    <text x="922" y="638" class="small" text-anchor="start">• Order</text>
+    <text x="922" y="662" class="small" text-anchor="start">• OrderLine</text>
+    <text x="908" y="694" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="922" y="718" class="small" text-anchor="start">• OrderStatus</text>
+    <text x="922" y="742" class="small" text-anchor="start">• DeliverySnapshot</text>
+    <text x="922" y="766" class="small" text-anchor="start">• BillingSnapshot</text>
+
+    <rect x="1490" y="530" width="420" height="300" class="box generic"/>
+    <text x="1700" y="556" class="box-title" text-anchor="middle">Payment Context</text>
+    <text x="1700" y="578" class="small" text-anchor="middle">Поддомен: Generic</text>
+    <text x="1508" y="612" class="box-text" text-anchor="start">Aggregate: Payment</text>
+    <text x="1508" y="644" class="box-title" text-anchor="start">Entity:</text>
+    <text x="1522" y="668" class="small" text-anchor="start">• Payment</text>
+    <text x="1522" y="692" class="small" text-anchor="start">• Transaction</text>
+    <text x="1522" y="716" class="small" text-anchor="start">• Refund</text>
+    <text x="1508" y="748" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="1522" y="772" class="small" text-anchor="start">• PaymentMethod</text>
+    <text x="1522" y="796" class="small" text-anchor="start">• PaymentStatus</text>
+    <text x="1522" y="820" class="small" text-anchor="start">• Amount</text>
+
+    <rect x="290" y="940" width="420" height="300" class="box support"/>
+    <text x="500" y="966" class="box-title" text-anchor="middle">Fulfillment Context</text>
+    <text x="500" y="988" class="small" text-anchor="middle">Поддомен: Supporting</text>
+    <text x="308" y="1022" class="box-text" text-anchor="start">Aggregate: Shipment</text>
+    <text x="308" y="1054" class="box-title" text-anchor="start">Entity:</text>
+    <text x="322" y="1078" class="small" text-anchor="start">• Shipment</text>
+    <text x="322" y="1102" class="small" text-anchor="start">• Parcel</text>
+    <text x="322" y="1126" class="small" text-anchor="start">• TrackingEvent</text>
+    <text x="308" y="1158" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="322" y="1182" class="small" text-anchor="start">• TrackingNumber</text>
+    <text x="322" y="1206" class="small" text-anchor="start">• ShippingAddress</text>
+    <text x="322" y="1230" class="small" text-anchor="start">• Carrier</text>
+
+    <rect x="1490" y="940" width="420" height="300" class="box generic"/>
+    <text x="1700" y="966" class="box-title" text-anchor="middle">Notification Context</text>
+    <text x="1700" y="988" class="small" text-anchor="middle">Поддомен: Generic</text>
+    <text x="1508" y="1022" class="box-text" text-anchor="start">Aggregate: NotificationBatch</text>
+    <text x="1508" y="1054" class="box-title" text-anchor="start">Entity:</text>
+    <text x="1522" y="1078" class="small" text-anchor="start">• Notification</text>
+    <text x="1522" y="1102" class="small" text-anchor="start">• Template</text>
+    <text x="1508" y="1134" class="box-title" text-anchor="start">Value Object:</text>
+    <text x="1522" y="1158" class="small" text-anchor="start">• Channel</text>
+    <text x="1522" y="1182" class="small" text-anchor="start">• Recipient</text>
+    <text x="1522" y="1206" class="small" text-anchor="start">• MessagePayload</text>
+
+    <rect x="1870" y="130" width="270" height="230" class="box"/>
+    <text x="2005" y="160" class="box-title" text-anchor="middle">Легенда</text>
+    <rect x="1890" y="179" width="22" height="22" rx="5" ry="5" style="fill:#e0f2fe;stroke:#334155;stroke-width:1"/>
+    <text x="1925" y="195" class="small" text-anchor="start">Core subdomain</text>
+    <rect x="1890" y="219" width="22" height="22" rx="5" ry="5" style="fill:#ecfccb;stroke:#334155;stroke-width:1"/>
+    <text x="1925" y="235" class="small" text-anchor="start">Supporting subdomain</text>
+    <rect x="1890" y="259" width="22" height="22" rx="5" ry="5" style="fill:#fef3c7;stroke:#334155;stroke-width:1"/>
+    <text x="1925" y="275" class="small" text-anchor="start">Generic subdomain</text>
+    <text x="1890" y="304" class="small" text-anchor="start">Сплошная стрелка — синхронный запрос</text>
+    <text x="1890" y="328" class="small" text-anchor="start">Пунктир — событие / асинхронная интеграция</text>
+
+    <path d="M 460 250 L 520 250" class="arrow"/>
+    <rect x="465" y="221" width="110" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="520.0" y="236" class="tiny" text-anchor="middle">прайсинг каталога</text>
+
+    <path d="M 920 250 L 1440 250" class="arrow"/>
+    <rect x="1085" y="221" width="150" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="1160.0" y="236" class="tiny" text-anchor="middle">цены и акции в корзине</text>
+
+    <path d="M 1380 280 L 1440 280" class="arrow"/>
+    <rect x="1385" y="251" width="130" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="1450.0" y="266" class="tiny" text-anchor="middle">идентификация клиента</text>
+
+    <path d="M 1640 430 C 1640 465, 1430 480, 1310 540" class="arrow"/>
+    <rect x="1440" y="455" width="135" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="1507.5" y="470" class="tiny" text-anchor="middle">checkout → create order</text>
+
+    <path d="M 710 680 L 890 680" class="arrow"/>
+    <rect x="735" y="651" width="170" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="820.0" y="666" class="tiny" text-anchor="middle">резерв / проверка остатков</text>
+
+    <path d="M 1310 680 L 1490 680" class="arrow"/>
+    <rect x="1340" y="651" width="120" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="1400.0" y="666" class="tiny" text-anchor="middle">запрос на оплату</text>
+
+    <path d="M 1490 720 L 1310 720" class="arrow dashed"/>
+    <rect x="1340" y="729" width="165" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="1422.5" y="744" class="tiny" text-anchor="middle">оплата подтверждена / ошибка</text>
+
+    <path d="M 1000 830 C 930 870, 860 900, 710 1010" class="arrow"/>
+    <rect x="795" y="903" width="120" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="855.0" y="918" class="tiny" text-anchor="middle">создать отгрузку</text>
+
+    <path d="M 500 830 L 500 940" class="arrow dashed"/>
+    <rect x="525" y="875" width="125" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="587.5" y="890" class="tiny" text-anchor="middle">данные комплектации</text>
+
+    <path d="M 1310 700 C 1450 760, 1510 860, 1600 940" class="arrow"/>
+    <rect x="1415" y="797" width="120" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="1475.0" y="812" class="tiny" text-anchor="middle">событие заказа</text>
+
+    <path d="M 710 1090 L 1490 1090" class="arrow dashed"/>
+    <rect x="980" y="1061" width="120" height="18" class="labelbg" rx="4" ry="4"/>
+    <text x="1040.0" y="1076" class="tiny" text-anchor="middle">статус доставки</text>
+
+    <rect x="845" y="1275" width="510" height="120" class="box"/>
+    <text x="1100" y="1304" class="box-title" text-anchor="middle">Ключевая идея</text>
+    <text x="875" y="1336" class="small" text-anchor="start">Order Context — центр жизненного цикла покупки.</text>
+    <text x="875" y="1360" class="small" text-anchor="start">Catalog / Cart / Order — core-часть магазина.</text>
+    <text x="875" y="1384" class="small" text-anchor="start">Payment и Notification допустимо интегрировать как generic-сервисы.</text>
+</svg>
