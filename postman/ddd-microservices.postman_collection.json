@@ -1,0 +1,360 @@
+{
+  "info": {
+    "_postman_id": "7b6c27e2-4d08-4f0f-9887-8e3b4f0d1112",
+    "name": "DDD Microservices",
+    "description": "CRUD-коллекция для order-service, payment-service и delivery-service.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "orderServiceUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "paymentServiceUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "deliveryServiceUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "orderId",
+      "value": "1"
+    },
+    {
+      "key": "paymentId",
+      "value": "1"
+    },
+    {
+      "key": "deliveryId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Order Service",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 101,\n  \"status\": \"NEW\",\n  \"shippingAddress\": {\n    \"street\": \"Tverskaya 1\",\n    \"city\": \"Moscow\",\n    \"postalCode\": \"125009\",\n    \"country\": \"RU\"\n  },\n  \"items\": [\n    {\n      \"productName\": \"Notebook\",\n      \"quantity\": 1,\n      \"price\": {\n        \"amount\": 79990.00,\n        \"currency\": \"RUB\"\n      }\n    },\n    {\n      \"productName\": \"Mouse\",\n      \"quantity\": 2,\n      \"price\": {\n        \"amount\": 1990.00,\n        \"currency\": \"RUB\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order By Id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 101,\n  \"status\": \"CONFIRMED\",\n  \"shippingAddress\": {\n    \"street\": \"Lenina 10\",\n    \"city\": \"Moscow\",\n    \"postalCode\": \"101000\",\n    \"country\": \"RU\"\n  },\n  \"items\": [\n    {\n      \"productName\": \"Notebook\",\n      \"quantity\": 1,\n      \"price\": {\n        \"amount\": 79990.00,\n        \"currency\": \"RUB\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Order",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Service",
+      "item": [
+        {
+          "name": "Create Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"status\": \"PENDING\",\n  \"method\": \"CARD\",\n  \"amount\": {\n    \"amount\": 83970.00,\n    \"currency\": \"RUB\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{paymentServiceUrl}}/api/payments",
+              "host": [
+                "{{paymentServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Payments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{paymentServiceUrl}}/api/payments",
+              "host": [
+                "{{paymentServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Payment By Id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{paymentServiceUrl}}/api/payments/{{paymentId}}",
+              "host": [
+                "{{paymentServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Payment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"status\": \"CAPTURED\",\n  \"method\": \"CARD\",\n  \"amount\": {\n    \"amount\": 83970.00,\n    \"currency\": \"RUB\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{paymentServiceUrl}}/api/payments/{{paymentId}}",
+              "host": [
+                "{{paymentServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Payment",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{paymentServiceUrl}}/api/payments/{{paymentId}}",
+              "host": [
+                "{{paymentServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delivery Service",
+      "item": [
+        {
+          "name": "Create Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"status\": \"SCHEDULED\",\n  \"deliveryAddress\": {\n    \"street\": \"Nevsky 15\",\n    \"city\": \"Saint Petersburg\",\n    \"postalCode\": \"191025\",\n    \"country\": \"RU\"\n  },\n  \"deliveryDate\": \"2026-03-20\",\n  \"timeWindow\": {\n    \"startTime\": \"10:00:00\",\n    \"endTime\": \"14:00:00\"\n  },\n  \"trackingNumber\": \"TRK-10001\"\n}"
+            },
+            "url": {
+              "raw": "{{deliveryServiceUrl}}/api/deliveries",
+              "host": [
+                "{{deliveryServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "deliveries"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Deliveries",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{deliveryServiceUrl}}/api/deliveries",
+              "host": [
+                "{{deliveryServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "deliveries"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Delivery By Id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{deliveryServiceUrl}}/api/deliveries/{{deliveryId}}",
+              "host": [
+                "{{deliveryServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{deliveryId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Delivery",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"status\": \"IN_TRANSIT\",\n  \"deliveryAddress\": {\n    \"street\": \"Nevsky 15\",\n    \"city\": \"Saint Petersburg\",\n    \"postalCode\": \"191025\",\n    \"country\": \"RU\"\n  },\n  \"deliveryDate\": \"2026-03-21\",\n  \"timeWindow\": {\n    \"startTime\": \"12:00:00\",\n    \"endTime\": \"18:00:00\"\n  },\n  \"trackingNumber\": \"TRK-10001\"\n}"
+            },
+            "url": {
+              "raw": "{{deliveryServiceUrl}}/api/deliveries/{{deliveryId}}",
+              "host": [
+                "{{deliveryServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{deliveryId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Delivery",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{deliveryServiceUrl}}/api/deliveries/{{deliveryId}}",
+              "host": [
+                "{{deliveryServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{deliveryId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
