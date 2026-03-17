@@ -12,5 +12,5 @@ public class PaymentRequest {
     private Long orderId;
     private PaymentStatus status;
     private PaymentMethod method;
-    private PaymentAmountDto amount;
+    private PaymentAmountRequest amount;
 }

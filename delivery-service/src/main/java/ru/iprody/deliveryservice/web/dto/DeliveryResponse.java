@@ -13,8 +13,8 @@ public class DeliveryResponse {
     private Long id;
     private Long orderId;
     private DeliveryStatus status;
-    private DeliveryAddressDto deliveryAddress;
+    private DeliveryAddressResponse deliveryAddress;
     private LocalDate deliveryDate;
-    private TimeWindowDto timeWindow;
+    private TimeWindowResponse timeWindow;
     private String trackingNumber;
 }

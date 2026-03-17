@@ -12,8 +12,8 @@ public class DeliveryRequest {
 
     private Long orderId;
     private DeliveryStatus status;
-    private DeliveryAddressDto deliveryAddress;
+    private DeliveryAddressRequest deliveryAddress;
     private LocalDate deliveryDate;
-    private TimeWindowDto timeWindow;
+    private TimeWindowRequest timeWindow;
     private String trackingNumber;
 }

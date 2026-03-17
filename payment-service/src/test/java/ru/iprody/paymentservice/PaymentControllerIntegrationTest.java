@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import ru.iprody.paymentservice.domain.model.PaymentMethod;
 import ru.iprody.paymentservice.domain.model.PaymentStatus;
 import ru.iprody.paymentservice.domain.repository.PaymentRepository;
-import ru.iprody.paymentservice.web.dto.PaymentAmountDto;
+import ru.iprody.paymentservice.web.dto.PaymentAmountRequest;
 import ru.iprody.paymentservice.web.dto.PaymentRequest;
 
 @SpringBootTest
@@ -49,7 +49,7 @@ class PaymentControllerIntegrationTest {
         createRequest.setOrderId(1L);
         createRequest.setStatus(PaymentStatus.PENDING);
         createRequest.setMethod(PaymentMethod.CARD);
-        createRequest.setAmount(new PaymentAmountDto(new BigDecimal("83970.00"), "RUB"));
+        createRequest.setAmount(new PaymentAmountRequest(new BigDecimal("83970.00"), "RUB"));
 
         MvcResult createResult = mockMvc.perform(post("/api/payments")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +78,7 @@ class PaymentControllerIntegrationTest {
         updateRequest.setOrderId(1L);
         updateRequest.setStatus(PaymentStatus.CAPTURED);
         updateRequest.setMethod(PaymentMethod.BANK_TRANSFER);
-        updateRequest.setAmount(new PaymentAmountDto(new BigDecimal("83970.00"), "RUB"));
+        updateRequest.setAmount(new PaymentAmountRequest(new BigDecimal("83970.00"), "RUB"));
 
         mockMvc.perform(put("/api/payments/{id}", paymentId)
                         .contentType(MediaType.APPLICATION_JSON)

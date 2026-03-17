@@ -1,7 +1,5 @@
 package ru.iprody.orderservice.web.dto;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,8 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoneyDto {
+public class ShippingAddressRequest {
 
-    private BigDecimal amount;
-    private String currency;
+    private String street;
+    private String city;
+    private String postalCode;
+    private String country;
 }

@@ -5,13 +5,13 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.iprody.paymentservice.application.command.PaymentCommand;
+import ru.iprody.paymentservice.application.dto.PaymentAmountDetails;
+import ru.iprody.paymentservice.application.dto.PaymentDetails;
 import ru.iprody.paymentservice.common.ResourceNotFoundException;
 import ru.iprody.paymentservice.domain.model.Payment;
 import ru.iprody.paymentservice.domain.model.PaymentAmount;
 import ru.iprody.paymentservice.domain.repository.PaymentRepository;
-import ru.iprody.paymentservice.web.dto.PaymentAmountDto;
-import ru.iprody.paymentservice.web.dto.PaymentRequest;
-import ru.iprody.paymentservice.web.dto.PaymentResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -21,66 +21,66 @@ public class PaymentApplicationService {
     private final PaymentRepository paymentRepository;
 
     @Transactional
-    public PaymentResponse create(PaymentRequest request) {
+    public PaymentDetails create(PaymentCommand paymentCommand) {
         Payment payment = new Payment(
-                request.getOrderId(),
-                request.getStatus(),
-                request.getMethod(),
-                toPaymentAmount(request.getAmount())
+                paymentCommand.orderId(),
+                paymentCommand.status(),
+                paymentCommand.method(),
+                toPaymentAmount(paymentCommand.amount())
         );
-        return toResponse(paymentRepository.save(payment));
+        return toPaymentDetails(paymentRepository.save(payment));
     }
 
-    public List<PaymentResponse> getAll() {
+    public List<PaymentDetails> getAll() {
         return paymentRepository.findAll()
                 .stream()
-                .map(this::toResponse)
+                .map(this::toPaymentDetails)
                 .toList();
     }
 
-    public PaymentResponse getById(Long id) {
-        return toResponse(getPayment(id));
+    public PaymentDetails getById(Long paymentId) {
+        return toPaymentDetails(getPayment(paymentId));
     }
 
     @Transactional
-    public PaymentResponse update(Long id, PaymentRequest request) {
-        Payment payment = getPayment(id);
+    public PaymentDetails update(Long paymentId, PaymentCommand paymentCommand) {
+        Payment payment = getPayment(paymentId);
         payment.update(
-                request.getOrderId(),
-                request.getStatus(),
-                request.getMethod(),
-                toPaymentAmount(request.getAmount())
+                paymentCommand.orderId(),
+                paymentCommand.status(),
+                paymentCommand.method(),
+                toPaymentAmount(paymentCommand.amount())
         );
-        return toResponse(payment);
+        return toPaymentDetails(payment);
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (!paymentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Payment with id " + id + " was not found");
+    public void delete(Long paymentId) {
+        if (!paymentRepository.existsById(paymentId)) {
+            throw new ResourceNotFoundException("Payment with id " + paymentId + " was not found");
         }
-        paymentRepository.deleteById(id);
+        paymentRepository.deleteById(paymentId);
     }
 
-    private Payment getPayment(Long id) {
-        return paymentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment with id " + id + " was not found"));
+    private Payment getPayment(Long paymentId) {
+        return paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment with id " + paymentId + " was not found"));
     }
 
-    private PaymentAmount toPaymentAmount(PaymentAmountDto amount) {
-        if (amount == null) {
+    private PaymentAmount toPaymentAmount(PaymentAmountDetails paymentAmountDetails) {
+        if (paymentAmountDetails == null) {
             throw new IllegalArgumentException("Payment amount must be provided");
         }
-        return new PaymentAmount(amount.getAmount(), amount.getCurrency());
+        return new PaymentAmount(paymentAmountDetails.amount(), paymentAmountDetails.currency());
     }
 
-    private PaymentResponse toResponse(Payment payment) {
-        return new PaymentResponse(
+    private PaymentDetails toPaymentDetails(Payment payment) {
+        return new PaymentDetails(
                 payment.getId(),
                 payment.getOrderId(),
                 payment.getStatus(),
                 payment.getMethod(),
-                new PaymentAmountDto(payment.getAmount().getAmount(), payment.getAmount().getCurrency()),
+                new PaymentAmountDetails(payment.getAmount().getAmount(), payment.getAmount().getCurrency()),
                 payment.getCreatedAt()
         );
     }

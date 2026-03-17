@@ -22,10 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.iprody.orderservice.domain.model.OrderStatus;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
-import ru.iprody.orderservice.web.dto.MoneyDto;
-import ru.iprody.orderservice.web.dto.OrderItemDto;
+import ru.iprody.orderservice.web.dto.MoneyRequest;
+import ru.iprody.orderservice.web.dto.OrderItemRequest;
 import ru.iprody.orderservice.web.dto.OrderRequest;
-import ru.iprody.orderservice.web.dto.ShippingAddressDto;
+import ru.iprody.orderservice.web.dto.ShippingAddressRequest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,10 +50,10 @@ class OrderControllerIntegrationTest {
         OrderRequest createRequest = new OrderRequest();
         createRequest.setCustomerId(101L);
         createRequest.setStatus(OrderStatus.NEW);
-        createRequest.setShippingAddress(new ShippingAddressDto("Tverskaya 1", "Moscow", "125009", "RU"));
+        createRequest.setShippingAddress(new ShippingAddressRequest("Tverskaya 1", "Moscow", "125009", "RU"));
         createRequest.setItems(List.of(
-                new OrderItemDto(null, "Notebook", 1, new MoneyDto(new BigDecimal("79990.00"), "RUB")),
-                new OrderItemDto(null, "Mouse", 2, new MoneyDto(new BigDecimal("1990.00"), "RUB"))
+                new OrderItemRequest("Notebook", 1, new MoneyRequest(new BigDecimal("79990.00"), "RUB")),
+                new OrderItemRequest("Mouse", 2, new MoneyRequest(new BigDecimal("1990.00"), "RUB"))
         ));
 
         MvcResult createResult = mockMvc.perform(post("/api/orders")
@@ -82,9 +82,9 @@ class OrderControllerIntegrationTest {
         OrderRequest updateRequest = new OrderRequest();
         updateRequest.setCustomerId(101L);
         updateRequest.setStatus(OrderStatus.CONFIRMED);
-        updateRequest.setShippingAddress(new ShippingAddressDto("Lenina 10", "Moscow", "101000", "RU"));
+        updateRequest.setShippingAddress(new ShippingAddressRequest("Lenina 10", "Moscow", "101000", "RU"));
         updateRequest.setItems(List.of(
-                new OrderItemDto(null, "Notebook", 1, new MoneyDto(new BigDecimal("79990.00"), "RUB"))
+                new OrderItemRequest("Notebook", 1, new MoneyRequest(new BigDecimal("79990.00"), "RUB"))
         ));
 
         mockMvc.perform(put("/api/orders/{id}", orderId)

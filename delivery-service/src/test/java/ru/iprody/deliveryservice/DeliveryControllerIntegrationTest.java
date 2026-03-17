@@ -22,9 +22,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.iprody.deliveryservice.domain.model.DeliveryStatus;
 import ru.iprody.deliveryservice.domain.repository.DeliveryRepository;
-import ru.iprody.deliveryservice.web.dto.DeliveryAddressDto;
+import ru.iprody.deliveryservice.web.dto.DeliveryAddressRequest;
 import ru.iprody.deliveryservice.web.dto.DeliveryRequest;
-import ru.iprody.deliveryservice.web.dto.TimeWindowDto;
+import ru.iprody.deliveryservice.web.dto.TimeWindowRequest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,9 +49,9 @@ class DeliveryControllerIntegrationTest {
         DeliveryRequest createRequest = new DeliveryRequest();
         createRequest.setOrderId(1L);
         createRequest.setStatus(DeliveryStatus.SCHEDULED);
-        createRequest.setDeliveryAddress(new DeliveryAddressDto("Nevsky 15", "Saint Petersburg", "191025", "RU"));
+        createRequest.setDeliveryAddress(new DeliveryAddressRequest("Nevsky 15", "Saint Petersburg", "191025", "RU"));
         createRequest.setDeliveryDate(LocalDate.of(2026, 3, 20));
-        createRequest.setTimeWindow(new TimeWindowDto(LocalTime.of(10, 0), LocalTime.of(14, 0)));
+        createRequest.setTimeWindow(new TimeWindowRequest(LocalTime.of(10, 0), LocalTime.of(14, 0)));
         createRequest.setTrackingNumber("TRK-10001");
 
         MvcResult createResult = mockMvc.perform(post("/api/deliveries")
@@ -80,9 +80,9 @@ class DeliveryControllerIntegrationTest {
         DeliveryRequest updateRequest = new DeliveryRequest();
         updateRequest.setOrderId(1L);
         updateRequest.setStatus(DeliveryStatus.IN_TRANSIT);
-        updateRequest.setDeliveryAddress(new DeliveryAddressDto("Nevsky 15", "Saint Petersburg", "191025", "RU"));
+        updateRequest.setDeliveryAddress(new DeliveryAddressRequest("Nevsky 15", "Saint Petersburg", "191025", "RU"));
         updateRequest.setDeliveryDate(LocalDate.of(2026, 3, 21));
-        updateRequest.setTimeWindow(new TimeWindowDto(LocalTime.of(12, 0), LocalTime.of(18, 0)));
+        updateRequest.setTimeWindow(new TimeWindowRequest(LocalTime.of(12, 0), LocalTime.of(18, 0)));
         updateRequest.setTrackingNumber("TRK-10002");
 
         mockMvc.perform(put("/api/deliveries/{id}", deliveryId)

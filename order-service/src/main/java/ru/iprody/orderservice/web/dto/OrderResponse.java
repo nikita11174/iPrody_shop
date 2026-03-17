@@ -15,7 +15,7 @@ public class OrderResponse {
     private Long customerId;
     private OrderStatus status;
     private LocalDateTime createdAt;
-    private ShippingAddressDto shippingAddress;
-    private MoneyDto totalAmount;
-    private List<OrderItemDto> items;
+    private ShippingAddressResponse shippingAddress;
+    private MoneyResponse totalAmount;
+    private List<OrderItemResponse> items;
 }
