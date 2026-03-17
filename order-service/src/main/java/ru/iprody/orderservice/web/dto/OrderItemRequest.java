@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemDto {
+public class OrderItemRequest {
 
-    private Long id;
     private String productName;
     private Integer quantity;
-    private MoneyDto price;
+    private MoneyRequest price;
 }

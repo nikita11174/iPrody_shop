@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.iprody.paymentservice.application.PaymentApplicationService;
 import ru.iprody.paymentservice.web.dto.PaymentRequest;
 import ru.iprody.paymentservice.web.dto.PaymentResponse;
+import ru.iprody.paymentservice.web.mapper.PaymentWebMapper;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -23,31 +24,39 @@ import ru.iprody.paymentservice.web.dto.PaymentResponse;
 public class PaymentController {
 
     private final PaymentApplicationService paymentApplicationService;
+    private final PaymentWebMapper paymentWebMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PaymentResponse create(@RequestBody PaymentRequest request) {
-        return paymentApplicationService.create(request);
+    public PaymentResponse create(@RequestBody PaymentRequest paymentRequest) {
+        return paymentWebMapper.toPaymentResponse(
+                paymentApplicationService.create(paymentWebMapper.toPaymentCommand(paymentRequest))
+        );
     }
 
     @GetMapping
     public List<PaymentResponse> getAll() {
-        return paymentApplicationService.getAll();
+        return paymentApplicationService.getAll()
+                .stream()
+                .map(paymentWebMapper::toPaymentResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public PaymentResponse getById(@PathVariable Long id) {
-        return paymentApplicationService.getById(id);
+    public PaymentResponse getById(@PathVariable("id") Long paymentId) {
+        return paymentWebMapper.toPaymentResponse(paymentApplicationService.getById(paymentId));
     }
 
     @PutMapping("/{id}")
-    public PaymentResponse update(@PathVariable Long id, @RequestBody PaymentRequest request) {
-        return paymentApplicationService.update(id, request);
+    public PaymentResponse update(@PathVariable("id") Long paymentId, @RequestBody PaymentRequest paymentRequest) {
+        return paymentWebMapper.toPaymentResponse(
+                paymentApplicationService.update(paymentId, paymentWebMapper.toPaymentCommand(paymentRequest))
+        );
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        paymentApplicationService.delete(id);
+    public void delete(@PathVariable("id") Long paymentId) {
+        paymentApplicationService.delete(paymentId);
     }
 }

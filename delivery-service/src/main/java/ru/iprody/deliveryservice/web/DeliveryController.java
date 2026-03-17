@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.iprody.deliveryservice.application.DeliveryApplicationService;
 import ru.iprody.deliveryservice.web.dto.DeliveryRequest;
 import ru.iprody.deliveryservice.web.dto.DeliveryResponse;
+import ru.iprody.deliveryservice.web.mapper.DeliveryWebMapper;
 
 @RestController
 @RequestMapping("/api/deliveries")
@@ -23,31 +24,39 @@ import ru.iprody.deliveryservice.web.dto.DeliveryResponse;
 public class DeliveryController {
 
     private final DeliveryApplicationService deliveryApplicationService;
+    private final DeliveryWebMapper deliveryWebMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DeliveryResponse create(@RequestBody DeliveryRequest request) {
-        return deliveryApplicationService.create(request);
+    public DeliveryResponse create(@RequestBody DeliveryRequest deliveryRequest) {
+        return deliveryWebMapper.toDeliveryResponse(
+                deliveryApplicationService.create(deliveryWebMapper.toDeliveryCommand(deliveryRequest))
+        );
     }
 
     @GetMapping
     public List<DeliveryResponse> getAll() {
-        return deliveryApplicationService.getAll();
+        return deliveryApplicationService.getAll()
+                .stream()
+                .map(deliveryWebMapper::toDeliveryResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public DeliveryResponse getById(@PathVariable Long id) {
-        return deliveryApplicationService.getById(id);
+    public DeliveryResponse getById(@PathVariable("id") Long deliveryId) {
+        return deliveryWebMapper.toDeliveryResponse(deliveryApplicationService.getById(deliveryId));
     }
 
     @PutMapping("/{id}")
-    public DeliveryResponse update(@PathVariable Long id, @RequestBody DeliveryRequest request) {
-        return deliveryApplicationService.update(id, request);
+    public DeliveryResponse update(@PathVariable("id") Long deliveryId, @RequestBody DeliveryRequest deliveryRequest) {
+        return deliveryWebMapper.toDeliveryResponse(
+                deliveryApplicationService.update(deliveryId, deliveryWebMapper.toDeliveryCommand(deliveryRequest))
+        );
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        deliveryApplicationService.delete(id);
+    public void delete(@PathVariable("id") Long deliveryId) {
+        deliveryApplicationService.delete(deliveryId);
     }
 }

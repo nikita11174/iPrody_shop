@@ -2,12 +2,10 @@ package ru.iprody.orderservice.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ShippingAddressDto {
+public class ShippingAddressResponse {
 
     private String street;
     private String city;

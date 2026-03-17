@@ -15,6 +15,6 @@ public class PaymentResponse {
     private Long orderId;
     private PaymentStatus status;
     private PaymentMethod method;
-    private PaymentAmountDto amount;
+    private PaymentAmountResponse amount;
     private LocalDateTime createdAt;
 }

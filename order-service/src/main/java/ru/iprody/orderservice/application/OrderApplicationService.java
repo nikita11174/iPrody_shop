@@ -6,17 +6,17 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.iprody.orderservice.application.command.OrderCommand;
+import ru.iprody.orderservice.application.dto.MoneyDetails;
+import ru.iprody.orderservice.application.dto.OrderDetails;
+import ru.iprody.orderservice.application.dto.OrderItemDetails;
+import ru.iprody.orderservice.application.dto.ShippingAddressDetails;
 import ru.iprody.orderservice.common.ResourceNotFoundException;
 import ru.iprody.orderservice.domain.model.Money;
 import ru.iprody.orderservice.domain.model.Order;
 import ru.iprody.orderservice.domain.model.OrderItem;
 import ru.iprody.orderservice.domain.model.ShippingAddress;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
-import ru.iprody.orderservice.web.dto.MoneyDto;
-import ru.iprody.orderservice.web.dto.OrderItemDto;
-import ru.iprody.orderservice.web.dto.OrderRequest;
-import ru.iprody.orderservice.web.dto.OrderResponse;
-import ru.iprody.orderservice.web.dto.ShippingAddressDto;
 
 @Service
 @RequiredArgsConstructor
@@ -26,107 +26,107 @@ public class OrderApplicationService {
     private final OrderRepository orderRepository;
 
     @Transactional
-    public OrderResponse create(OrderRequest request) {
+    public OrderDetails create(OrderCommand orderCommand) {
         Order order = new Order(
-                request.getCustomerId(),
-                request.getStatus(),
-                toShippingAddress(request.getShippingAddress()),
-                toOrderItems(request.getItems())
+                orderCommand.customerId(),
+                orderCommand.status(),
+                toShippingAddress(orderCommand.shippingAddress()),
+                toOrderItems(orderCommand.items())
         );
-        return toResponse(orderRepository.save(order));
+        return toOrderDetails(orderRepository.save(order));
     }
 
-    public List<OrderResponse> getAll() {
+    public List<OrderDetails> getAll() {
         return orderRepository.findAll()
                 .stream()
-                .map(this::toResponse)
+                .map(this::toOrderDetails)
                 .toList();
     }
 
-    public OrderResponse getById(Long id) {
-        return toResponse(getOrder(id));
+    public OrderDetails getById(Long orderId) {
+        return toOrderDetails(getOrder(orderId));
     }
 
     @Transactional
-    public OrderResponse update(Long id, OrderRequest request) {
-        Order order = getOrder(id);
+    public OrderDetails update(Long orderId, OrderCommand orderCommand) {
+        Order order = getOrder(orderId);
         order.update(
-                request.getCustomerId(),
-                request.getStatus(),
-                toShippingAddress(request.getShippingAddress()),
-                toOrderItems(request.getItems())
+                orderCommand.customerId(),
+                orderCommand.status(),
+                toShippingAddress(orderCommand.shippingAddress()),
+                toOrderItems(orderCommand.items())
         );
-        return toResponse(order);
+        return toOrderDetails(order);
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (!orderRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Order with id " + id + " was not found");
+    public void delete(Long orderId) {
+        if (!orderRepository.existsById(orderId)) {
+            throw new ResourceNotFoundException("Order with id " + orderId + " was not found");
         }
-        orderRepository.deleteById(id);
+        orderRepository.deleteById(orderId);
     }
 
-    private Order getOrder(Long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order with id " + id + " was not found"));
+    private Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order with id " + orderId + " was not found"));
     }
 
-    private ShippingAddress toShippingAddress(ShippingAddressDto source) {
-        if (source == null) {
+    private ShippingAddress toShippingAddress(ShippingAddressDetails shippingAddressDetails) {
+        if (shippingAddressDetails == null) {
             throw new IllegalArgumentException("Shipping address must be provided");
         }
         return new ShippingAddress(
-                source.getStreet(),
-                source.getCity(),
-                source.getPostalCode(),
-                source.getCountry()
+                shippingAddressDetails.street(),
+                shippingAddressDetails.city(),
+                shippingAddressDetails.postalCode(),
+                shippingAddressDetails.country()
         );
     }
 
-    private List<OrderItem> toOrderItems(List<OrderItemDto> source) {
-        if (source == null) {
+    private List<OrderItem> toOrderItems(List<OrderItemDetails> orderItemDetailsList) {
+        if (orderItemDetailsList == null) {
             return Collections.emptyList();
         }
-        return source.stream()
-                .map(item -> new OrderItem(
-                        item.getProductName(),
-                        item.getQuantity(),
-                        toMoney(item)
+        return orderItemDetailsList.stream()
+                .map(orderItemDetails -> new OrderItem(
+                        orderItemDetails.productName(),
+                        orderItemDetails.quantity(),
+                        toMoney(orderItemDetails)
                 ))
                 .toList();
     }
 
-    private Money toMoney(OrderItemDto item) {
-        if (item == null || item.getPrice() == null) {
+    private Money toMoney(OrderItemDetails orderItemDetails) {
+        if (orderItemDetails == null || orderItemDetails.price() == null) {
             throw new IllegalArgumentException("Each order item must contain price");
         }
-        return new Money(item.getPrice().getAmount(), item.getPrice().getCurrency());
+        return new Money(orderItemDetails.price().amount(), orderItemDetails.price().currency());
     }
 
-    private OrderResponse toResponse(Order order) {
-        return new OrderResponse(
+    private OrderDetails toOrderDetails(Order order) {
+        return new OrderDetails(
                 order.getId(),
                 order.getCustomerId(),
                 order.getStatus(),
                 order.getCreatedAt(),
-                new ShippingAddressDto(
+                new ShippingAddressDetails(
                         order.getShippingAddress().getStreet(),
                         order.getShippingAddress().getCity(),
                         order.getShippingAddress().getPostalCode(),
                         order.getShippingAddress().getCountry()
                 ),
-                new MoneyDto(
+                new MoneyDetails(
                         order.getTotalAmount().getAmount(),
                         order.getTotalAmount().getCurrency()
                 ),
                 order.getItems()
                         .stream()
-                        .map(item -> new OrderItemDto(
-                                item.getId(),
-                                item.getProductName(),
-                                item.getQuantity(),
-                                new MoneyDto(item.getPrice().getAmount(), item.getPrice().getCurrency())
+                        .map(orderItem -> new OrderItemDetails(
+                                orderItem.getId(),
+                                orderItem.getProductName(),
+                                orderItem.getQuantity(),
+                                new MoneyDetails(orderItem.getPrice().getAmount(), orderItem.getPrice().getCurrency())
                         ))
                         .toList()
         );

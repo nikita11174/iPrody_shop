@@ -13,6 +13,6 @@ public class OrderRequest {
 
     private Long customerId;
     private OrderStatus status;
-    private ShippingAddressDto shippingAddress;
-    private List<OrderItemDto> items = new ArrayList<>();
+    private ShippingAddressRequest shippingAddress;
+    private List<OrderItemRequest> items = new ArrayList<>();
 }
