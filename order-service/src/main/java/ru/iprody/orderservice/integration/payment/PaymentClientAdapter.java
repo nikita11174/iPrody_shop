@@ -2,7 +2,9 @@ package ru.iprody.orderservice.integration.payment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,8 @@ public class PaymentClientAdapter {
 
     @Retry(name = "paymentServiceRetry")
     @CircuitBreaker(name = "paymentServiceCircuitBreaker")
+    @RateLimiter(name = "paymentClientRateLimiter")
+    @Bulkhead(name = "paymentClientBulkhead")
     public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
         String idempotencyKey = request.orderId().toString();
         log.debug("Calling payment-service, idempotency-key={}", idempotencyKey);
