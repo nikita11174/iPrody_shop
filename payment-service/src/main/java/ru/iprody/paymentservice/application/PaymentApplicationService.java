@@ -2,6 +2,7 @@ package ru.iprody.paymentservice.application;
 
 import java.util.List;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class PaymentApplicationService {
     private final PaymentRepository paymentRepository;
 
     @Transactional
+    @CircuitBreaker(name = "paymentServiceCircuitBreaker")
     public PaymentDetails create(PaymentCommand paymentCommand) {
         Payment payment = new Payment(
                 paymentCommand.orderId(),
@@ -31,6 +33,7 @@ public class PaymentApplicationService {
         return toPaymentDetails(paymentRepository.save(payment));
     }
 
+    @CircuitBreaker(name = "paymentServiceCircuitBreaker")
     public List<PaymentDetails> getAll() {
         return paymentRepository.findAll()
                 .stream()
@@ -38,11 +41,13 @@ public class PaymentApplicationService {
                 .toList();
     }
 
+    @CircuitBreaker(name = "paymentServiceCircuitBreaker")
     public PaymentDetails getById(Long paymentId) {
         return toPaymentDetails(getPayment(paymentId));
     }
 
     @Transactional
+    @CircuitBreaker(name = "paymentServiceCircuitBreaker")
     public PaymentDetails update(Long paymentId, PaymentCommand paymentCommand) {
         Payment payment = getPayment(paymentId);
         payment.update(
@@ -55,6 +60,7 @@ public class PaymentApplicationService {
     }
 
     @Transactional
+    @CircuitBreaker(name = "paymentServiceCircuitBreaker")
     public void delete(Long paymentId) {
         if (!paymentRepository.existsById(paymentId)) {
             throw new ResourceNotFoundException("Payment with id " + paymentId + " was not found");

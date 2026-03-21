@@ -1,6 +1,7 @@
 package ru.iprody.orderservice;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -137,13 +138,15 @@ class OrderControllerIntegrationTest {
 
         long orderId = objectMapper.readTree(createOrderResult.getResponse().getContentAsString()).get("id").asLong();
 
-        given(paymentServiceClient.createPayment(argThat(request ->
-                request.orderId().equals(orderId)
-                        && request.status() == PaymentStatus.PENDING
-                        && request.method() == PaymentMethod.CARD
-                        && request.amount().amount().compareTo(new BigDecimal("83970.00")) == 0
-                        && "RUB".equals(request.amount().currency())
-        ))).willReturn(new PaymentCreateResponse(
+        given(paymentServiceClient.createPayment(
+                any(String.class),
+                argThat(request ->
+                        request.orderId().equals(orderId)
+                                && request.status() == PaymentStatus.PENDING
+                                && request.method() == PaymentMethod.CARD
+                                && request.amount().amount().compareTo(new BigDecimal("83970.00")) == 0
+                                && "RUB".equals(request.amount().currency())
+                ))).willReturn(new PaymentCreateResponse(
                 1L,
                 orderId,
                 PaymentStatus.PENDING,
@@ -165,12 +168,14 @@ class OrderControllerIntegrationTest {
                 .andExpect(jsonPath("$.method").value("CARD"))
                 .andExpect(jsonPath("$.amount.amount").value(83970.00));
 
-        verify(paymentServiceClient).createPayment(argThat(request ->
-                request.orderId().equals(orderId)
-                        && request.status() == PaymentStatus.PENDING
-                        && request.method() == PaymentMethod.CARD
-                        && request.amount().amount().compareTo(new BigDecimal("83970.00")) == 0
-                        && "RUB".equals(request.amount().currency())
-        ));
+        verify(paymentServiceClient).createPayment(
+                any(String.class),
+                argThat(request ->
+                        request.orderId().equals(orderId)
+                                && request.status() == PaymentStatus.PENDING
+                                && request.method() == PaymentMethod.CARD
+                                && request.amount().amount().compareTo(new BigDecimal("83970.00")) == 0
+                                && "RUB".equals(request.amount().currency())
+                ));
     }
 }

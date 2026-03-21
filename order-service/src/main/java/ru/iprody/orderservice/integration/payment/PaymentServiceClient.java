@@ -3,6 +3,7 @@ package ru.iprody.orderservice.integration.payment;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import ru.iprody.orderservice.integration.payment.dto.PaymentCreateRequest;
 import ru.iprody.orderservice.integration.payment.dto.PaymentCreateResponse;
 
@@ -10,5 +11,8 @@ import ru.iprody.orderservice.integration.payment.dto.PaymentCreateResponse;
 public interface PaymentServiceClient {
 
     @PostMapping("/api/payments")
-    PaymentCreateResponse createPayment(@RequestBody PaymentCreateRequest paymentCreateRequest);
+    PaymentCreateResponse createPayment(
+            @RequestHeader("X-Idempotency-Key") String idempotencyKey,
+            @RequestBody PaymentCreateRequest paymentCreateRequest
+    );
 }

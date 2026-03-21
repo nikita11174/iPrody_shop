@@ -2,6 +2,7 @@ package ru.iprody.deliveryservice.application;
 
 import java.util.List;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class DeliveryApplicationService {
     private final DeliveryRepository deliveryRepository;
 
     @Transactional
+    @CircuitBreaker(name = "deliveryServiceCircuitBreaker")
     public DeliveryDetails create(DeliveryCommand deliveryCommand) {
         Delivery delivery = new Delivery(
                 deliveryCommand.orderId(),
@@ -35,6 +37,7 @@ public class DeliveryApplicationService {
         return toDeliveryDetails(deliveryRepository.save(delivery));
     }
 
+    @CircuitBreaker(name = "deliveryServiceCircuitBreaker")
     public List<DeliveryDetails> getAll() {
         return deliveryRepository.findAll()
                 .stream()
@@ -42,11 +45,13 @@ public class DeliveryApplicationService {
                 .toList();
     }
 
+    @CircuitBreaker(name = "deliveryServiceCircuitBreaker")
     public DeliveryDetails getById(Long deliveryId) {
         return toDeliveryDetails(getDelivery(deliveryId));
     }
 
     @Transactional
+    @CircuitBreaker(name = "deliveryServiceCircuitBreaker")
     public DeliveryDetails update(Long deliveryId, DeliveryCommand deliveryCommand) {
         Delivery delivery = getDelivery(deliveryId);
         delivery.update(
@@ -61,6 +66,7 @@ public class DeliveryApplicationService {
     }
 
     @Transactional
+    @CircuitBreaker(name = "deliveryServiceCircuitBreaker")
     public void delete(Long deliveryId) {
         if (!deliveryRepository.existsById(deliveryId)) {
             throw new ResourceNotFoundException("Delivery with id " + deliveryId + " was not found");

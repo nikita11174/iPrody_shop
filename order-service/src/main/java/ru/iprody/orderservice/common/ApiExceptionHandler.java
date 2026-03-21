@@ -1,5 +1,6 @@
 package ru.iprody.orderservice.common;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(PaymentServiceException.class)
     public ResponseEntity<ApiError> handleBadGateway(PaymentServiceException exception, HttpServletRequest request) {
         return buildResponse(HttpStatus.BAD_GATEWAY, exception.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CallNotPermittedException.class)
+    public ResponseEntity<ApiError> handleCircuitBreakerOpen(CallNotPermittedException exception, HttpServletRequest request) {
+        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, "Service temporarily unavailable", request.getRequestURI());
     }
 
     private ResponseEntity<ApiError> buildResponse(HttpStatus status, String message, String path) {
