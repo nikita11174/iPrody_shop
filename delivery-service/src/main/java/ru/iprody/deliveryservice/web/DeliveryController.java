@@ -21,11 +21,12 @@ import ru.iprody.deliveryservice.web.mapper.DeliveryWebMapper;
 @RestController
 @RequestMapping("/api/deliveries")
 @RequiredArgsConstructor
-public class DeliveryController {
+public class DeliveryController implements DeliveryApi {
 
     private final DeliveryApplicationService deliveryApplicationService;
     private final DeliveryWebMapper deliveryWebMapper;
 
+    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DeliveryResponse create(@RequestBody DeliveryRequest deliveryRequest) {
@@ -34,6 +35,7 @@ public class DeliveryController {
         );
     }
 
+    @Override
     @GetMapping
     public List<DeliveryResponse> getAll() {
         return deliveryApplicationService.getAll()
@@ -42,11 +44,13 @@ public class DeliveryController {
                 .toList();
     }
 
+    @Override
     @GetMapping("/{id}")
     public DeliveryResponse getById(@PathVariable("id") Long deliveryId) {
         return deliveryWebMapper.toDeliveryResponse(deliveryApplicationService.getById(deliveryId));
     }
 
+    @Override
     @PutMapping("/{id}")
     public DeliveryResponse update(@PathVariable("id") Long deliveryId, @RequestBody DeliveryRequest deliveryRequest) {
         return deliveryWebMapper.toDeliveryResponse(
@@ -54,6 +58,7 @@ public class DeliveryController {
         );
     }
 
+    @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long deliveryId) {

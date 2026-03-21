@@ -21,11 +21,12 @@ import ru.iprody.paymentservice.web.mapper.PaymentWebMapper;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-public class PaymentController {
+public class PaymentController implements PaymentApi {
 
     private final PaymentApplicationService paymentApplicationService;
     private final PaymentWebMapper paymentWebMapper;
 
+    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PaymentResponse create(@RequestBody PaymentRequest paymentRequest) {
@@ -34,6 +35,7 @@ public class PaymentController {
         );
     }
 
+    @Override
     @GetMapping
     public List<PaymentResponse> getAll() {
         return paymentApplicationService.getAll()
@@ -42,11 +44,13 @@ public class PaymentController {
                 .toList();
     }
 
+    @Override
     @GetMapping("/{id}")
     public PaymentResponse getById(@PathVariable("id") Long paymentId) {
         return paymentWebMapper.toPaymentResponse(paymentApplicationService.getById(paymentId));
     }
 
+    @Override
     @PutMapping("/{id}")
     public PaymentResponse update(@PathVariable("id") Long paymentId, @RequestBody PaymentRequest paymentRequest) {
         return paymentWebMapper.toPaymentResponse(
@@ -54,6 +58,7 @@ public class PaymentController {
         );
     }
 
+    @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long paymentId) {

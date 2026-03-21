@@ -9,8 +9,12 @@ import ru.iprody.orderservice.application.dto.MoneyDetails;
 import ru.iprody.orderservice.application.dto.OrderDetails;
 import ru.iprody.orderservice.application.dto.OrderItemDetails;
 import ru.iprody.orderservice.application.dto.ShippingAddressDetails;
+import ru.iprody.orderservice.application.payment.CreateOrderPaymentCommand;
+import ru.iprody.orderservice.application.payment.OrderPaymentDetails;
 import ru.iprody.orderservice.web.dto.MoneyRequest;
 import ru.iprody.orderservice.web.dto.MoneyResponse;
+import ru.iprody.orderservice.web.dto.OrderPaymentRequest;
+import ru.iprody.orderservice.web.dto.OrderPaymentResponse;
 import ru.iprody.orderservice.web.dto.OrderItemRequest;
 import ru.iprody.orderservice.web.dto.OrderItemResponse;
 import ru.iprody.orderservice.web.dto.OrderRequest;
@@ -42,6 +46,24 @@ public class OrderWebMapper {
                         .stream()
                         .map(this::toOrderItemResponse)
                         .toList()
+        );
+    }
+
+    public CreateOrderPaymentCommand toCreateOrderPaymentCommand(OrderPaymentRequest orderPaymentRequest) {
+        if (orderPaymentRequest == null) {
+            return new CreateOrderPaymentCommand(null);
+        }
+        return new CreateOrderPaymentCommand(orderPaymentRequest.getMethod());
+    }
+
+    public OrderPaymentResponse toOrderPaymentResponse(OrderPaymentDetails orderPaymentDetails) {
+        return new OrderPaymentResponse(
+                orderPaymentDetails.id(),
+                orderPaymentDetails.orderId(),
+                orderPaymentDetails.status(),
+                orderPaymentDetails.method(),
+                toMoneyResponse(orderPaymentDetails.amount()),
+                orderPaymentDetails.createdAt()
         );
     }
 

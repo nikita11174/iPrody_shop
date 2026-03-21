@@ -3,6 +3,7 @@ package ru.iprody.orderservice.application;
 import java.util.Collections;
 import java.util.List;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,12 +12,17 @@ import ru.iprody.orderservice.application.dto.MoneyDetails;
 import ru.iprody.orderservice.application.dto.OrderDetails;
 import ru.iprody.orderservice.application.dto.OrderItemDetails;
 import ru.iprody.orderservice.application.dto.ShippingAddressDetails;
+import ru.iprody.orderservice.application.payment.CreateOrderPaymentCommand;
+import ru.iprody.orderservice.application.payment.OrderPaymentDetails;
 import ru.iprody.orderservice.common.ResourceNotFoundException;
+import ru.iprody.orderservice.common.PaymentServiceException;
 import ru.iprody.orderservice.domain.model.Money;
 import ru.iprody.orderservice.domain.model.Order;
 import ru.iprody.orderservice.domain.model.OrderItem;
 import ru.iprody.orderservice.domain.model.ShippingAddress;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
+import ru.iprody.orderservice.integration.payment.PaymentServiceClient;
+import ru.iprody.orderservice.integration.payment.PaymentServiceMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +30,8 @@ import ru.iprody.orderservice.domain.repository.OrderRepository;
 public class OrderApplicationService {
 
     private final OrderRepository orderRepository;
+    private final PaymentServiceClient paymentServiceClient;
+    private final PaymentServiceMapper paymentServiceMapper;
 
     @Transactional
     public OrderDetails create(OrderCommand orderCommand) {
@@ -65,6 +73,27 @@ public class OrderApplicationService {
             throw new ResourceNotFoundException("Order with id " + orderId + " was not found");
         }
         orderRepository.deleteById(orderId);
+    }
+
+    @Transactional
+    public OrderPaymentDetails createPayment(Long orderId, CreateOrderPaymentCommand createOrderPaymentCommand) {
+        if (createOrderPaymentCommand == null || createOrderPaymentCommand.method() == null) {
+            throw new IllegalArgumentException("Payment method must be provided");
+        }
+
+        Order order = getOrder(orderId);
+        try {
+            return paymentServiceMapper.toOrderPaymentDetails(
+                    paymentServiceClient.createPayment(
+                            paymentServiceMapper.toPaymentCreateRequest(order, createOrderPaymentCommand)
+                    )
+            );
+        } catch (FeignException exception) {
+            throw new PaymentServiceException(
+                    "Payment service request failed with status " + exception.status(),
+                    exception
+            );
+        }
     }
 
     private Order getOrder(Long orderId) {
