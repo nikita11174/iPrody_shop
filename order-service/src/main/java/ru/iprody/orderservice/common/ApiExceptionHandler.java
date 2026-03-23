@@ -22,6 +22,11 @@ public class ApiExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(PaymentServiceException.class)
+    public ResponseEntity<ApiError> handleBadGateway(PaymentServiceException exception, HttpServletRequest request) {
+        return buildResponse(HttpStatus.BAD_GATEWAY, exception.getMessage(), request.getRequestURI());
+    }
+
     private ResponseEntity<ApiError> buildResponse(HttpStatus status, String message, String path) {
         ApiError error = new ApiError(
                 LocalDateTime.now(),

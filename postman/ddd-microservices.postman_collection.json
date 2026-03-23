@@ -78,6 +78,34 @@
           }
         },
         {
+          "name": "Create Payment For Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"CARD\"\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}/payment",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "payment"
+              ]
+            }
+          }
+        },
+        {
           "name": "Get Order By Id",
           "request": {
             "method": "GET",

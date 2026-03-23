@@ -10,6 +10,17 @@
 
 Каждый сервис запускается отдельно, имеет собственную H2 in-memory базу данных и предоставляет REST API для CRUD-операций.
 
+Во всех трёх сервисах слои разделены одинаково:
+
+- `web` отвечает за transport-модели и HTTP-контракт;
+- `web/mapper` переводит `Request/Response` в прикладные модели и обратно;
+- `application` работает с собственными `Command` и `Details`;
+- `domain` содержит aggregate root, entity, value object и repository интерфейсы.
+
+Это даёт возможность менять внешний transport независимо от прикладного сценария: текущий REST API может быть дополнен новой версией API, WebSocket-обработчиком или consumer'ом сообщений без протаскивания transport DTO в application service.
+
+Начиная с lesson-3, `order-service` умеет инициировать создание платежа в `payment-service` по REST через OpenFeign.
+
 В корне репозитория также находятся диаграммы предметной области:
 
 - `Разбиение_по_бизнес_возможностям.svg`
@@ -20,6 +31,8 @@
 - Java 17
 - Spring Boot 3.3.0
 - Spring Web
+- OpenFeign
+- springdoc OpenAPI / Swagger UI
 - Spring Data JPA
 - H2 Database
 - Lombok
@@ -145,6 +158,10 @@ mvn test
 
 - `postman/ddd-microservices.postman_collection.json`
 
+Дополнительный сценарий lesson-3:
+
+- `order-service` -> `POST /api/orders/{orderId}/payment` создаёт платёж в `payment-service` через OpenFeign.
+
 ## Хранение данных
 
 - каждый сервис использует отдельную H2 in-memory базу данных;
@@ -154,3 +171,9 @@ mvn test
 ## Обработка ошибок
 
 Во всех сервисах реализована базовая обработка ошибки `not found` через единый JSON-ответ API.
+
+## Swagger UI
+
+- `order-service` -> `http://localhost:8081/swagger-ui/index.html`
+- `payment-service` -> `http://localhost:8082/swagger-ui/index.html`
+- `delivery-service` -> `http://localhost:8083/swagger-ui/index.html`

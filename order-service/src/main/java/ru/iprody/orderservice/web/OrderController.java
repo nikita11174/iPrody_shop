@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.iprody.orderservice.application.OrderApplicationService;
+import ru.iprody.orderservice.web.dto.OrderPaymentRequest;
+import ru.iprody.orderservice.web.dto.OrderPaymentResponse;
 import ru.iprody.orderservice.web.dto.OrderRequest;
 import ru.iprody.orderservice.web.dto.OrderResponse;
 import ru.iprody.orderservice.web.mapper.OrderWebMapper;
@@ -21,11 +23,12 @@ import ru.iprody.orderservice.web.mapper.OrderWebMapper;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController implements OrderApi {
 
     private final OrderApplicationService orderApplicationService;
     private final OrderWebMapper orderWebMapper;
 
+    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse create(@RequestBody OrderRequest orderRequest) {
@@ -34,6 +37,7 @@ public class OrderController {
         );
     }
 
+    @Override
     @GetMapping
     public List<OrderResponse> getAll() {
         return orderApplicationService.getAll()
@@ -42,11 +46,13 @@ public class OrderController {
                 .toList();
     }
 
+    @Override
     @GetMapping("/{id}")
     public OrderResponse getById(@PathVariable("id") Long orderId) {
         return orderWebMapper.toOrderResponse(orderApplicationService.getById(orderId));
     }
 
+    @Override
     @PutMapping("/{id}")
     public OrderResponse update(@PathVariable("id") Long orderId, @RequestBody OrderRequest orderRequest) {
         return orderWebMapper.toOrderResponse(
@@ -54,9 +60,25 @@ public class OrderController {
         );
     }
 
+    @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long orderId) {
         orderApplicationService.delete(orderId);
+    }
+
+    @Override
+    @PostMapping("/{id}/payment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderPaymentResponse createPayment(
+            @PathVariable("id") Long orderId,
+            @RequestBody OrderPaymentRequest orderPaymentRequest
+    ) {
+        return orderWebMapper.toOrderPaymentResponse(
+                orderApplicationService.createPayment(
+                        orderId,
+                        orderWebMapper.toCreateOrderPaymentCommand(orderPaymentRequest)
+                )
+        );
     }
 }

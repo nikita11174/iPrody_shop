@@ -21,3 +21,6 @@ spring:
       hibernate:
         format_sql: true
 
+clients:
+  payment-service:
+    url: http://localhost:8082
