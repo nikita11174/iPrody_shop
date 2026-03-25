@@ -52,6 +52,7 @@ class PaymentControllerIntegrationTest {
         createRequest.setAmount(new PaymentAmountRequest(new BigDecimal("83970.00"), "RUB"));
 
         MvcResult createResult = mockMvc.perform(post("/api/payments")
+                        .header("X-Idempotency-Key", "test-create-payment-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isCreated())
