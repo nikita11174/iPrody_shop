@@ -3,7 +3,7 @@ package ru.iprody.orderservice.application;
 import java.util.Collections;
 import java.util.List;
 
-import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ import ru.iprody.orderservice.domain.model.Order;
 import ru.iprody.orderservice.domain.model.OrderItem;
 import ru.iprody.orderservice.domain.model.ShippingAddress;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
-import ru.iprody.orderservice.integration.payment.PaymentServiceClient;
+import ru.iprody.orderservice.integration.payment.PaymentClientAdapter;
 import ru.iprody.orderservice.integration.payment.PaymentServiceMapper;
 
 @Service
@@ -30,10 +30,11 @@ import ru.iprody.orderservice.integration.payment.PaymentServiceMapper;
 public class OrderApplicationService {
 
     private final OrderRepository orderRepository;
-    private final PaymentServiceClient paymentServiceClient;
+    private final PaymentClientAdapter paymentClientAdapter;
     private final PaymentServiceMapper paymentServiceMapper;
 
     @Transactional
+    @CircuitBreaker(name = "orderServiceCircuitBreaker")
     public OrderDetails create(OrderCommand orderCommand) {
         Order order = new Order(
                 orderCommand.customerId(),
@@ -44,6 +45,7 @@ public class OrderApplicationService {
         return toOrderDetails(orderRepository.save(order));
     }
 
+    @CircuitBreaker(name = "orderServiceCircuitBreaker")
     public List<OrderDetails> getAll() {
         return orderRepository.findAll()
                 .stream()
@@ -51,11 +53,13 @@ public class OrderApplicationService {
                 .toList();
     }
 
+    @CircuitBreaker(name = "orderServiceCircuitBreaker")
     public OrderDetails getById(Long orderId) {
         return toOrderDetails(getOrder(orderId));
     }
 
     @Transactional
+    @CircuitBreaker(name = "orderServiceCircuitBreaker")
     public OrderDetails update(Long orderId, OrderCommand orderCommand) {
         Order order = getOrder(orderId);
         order.update(
@@ -68,6 +72,7 @@ public class OrderApplicationService {
     }
 
     @Transactional
+    @CircuitBreaker(name = "orderServiceCircuitBreaker")
     public void delete(Long orderId) {
         if (!orderRepository.existsById(orderId)) {
             throw new ResourceNotFoundException("Order with id " + orderId + " was not found");
@@ -84,13 +89,13 @@ public class OrderApplicationService {
         Order order = getOrder(orderId);
         try {
             return paymentServiceMapper.toOrderPaymentDetails(
-                    paymentServiceClient.createPayment(
+                    paymentClientAdapter.createPayment(
                             paymentServiceMapper.toPaymentCreateRequest(order, createOrderPaymentCommand)
                     )
             );
-        } catch (FeignException exception) {
+        } catch (RuntimeException exception) {
             throw new PaymentServiceException(
-                    "Payment service request failed with status " + exception.status(),
+                    "Payment service request failed: " + exception.getMessage(),
                     exception
             );
         }

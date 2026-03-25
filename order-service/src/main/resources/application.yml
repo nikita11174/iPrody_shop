@@ -24,3 +24,39 @@ spring:
 clients:
   payment-service:
     url: http://localhost:8082
+
+resilience4j:
+  retry:
+    instances:
+      paymentServiceRetry:
+        maxAttempts: 3
+        waitDuration: 500ms
+        retryExceptions:
+          - feign.FeignException
+        ignoreExceptions:
+          - java.lang.RuntimeException
+
+  circuitbreaker:
+    instances:
+      paymentServiceCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+        recordExceptions:
+          - feign.FeignException
+        ignoreExceptions:
+          - java.lang.RuntimeException
+      orderServiceCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+
+logging:
+  level:
+    io.github.resilience4j: DEBUG
