@@ -20,6 +20,26 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9093
+    consumer:
+      group-id: delivery-consumers
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: "ru.iprody.deliveryservice.integration.order.messaging.dto.OrderPaidMessage"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+kafka:
+  order:
+    order-paid-topic: order.paid
+    delivery-created-topic: delivery.created
 
 resilience4j:
   circuitbreaker:

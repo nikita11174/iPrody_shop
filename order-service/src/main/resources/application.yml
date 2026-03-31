@@ -24,10 +24,19 @@ spring:
     username: admin
     password: admin
     addresses: amqp://localhost:5672
+  kafka:
+    bootstrap-servers: localhost:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 clients:
   payment-service:
     url: http://localhost:8082
+
+kafka:
+  delivery:
+    order-paid-topic: order.paid
 
 rabbitmq:
   payment:

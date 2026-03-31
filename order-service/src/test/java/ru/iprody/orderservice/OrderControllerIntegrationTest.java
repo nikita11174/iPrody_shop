@@ -30,6 +30,7 @@ import ru.iprody.orderservice.application.payment.PaymentMethod;
 import ru.iprody.orderservice.application.payment.PaymentStatus;
 import ru.iprody.orderservice.domain.model.OrderStatus;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
+import ru.iprody.orderservice.integration.delivery.messaging.OrderPaidPublisher;
 import ru.iprody.orderservice.integration.payment.PaymentServiceClient;
 import ru.iprody.orderservice.integration.payment.dto.PaymentAmountResponse;
 import ru.iprody.orderservice.integration.payment.dto.PaymentCreateResponse;
@@ -54,6 +55,9 @@ class OrderControllerIntegrationTest {
 
     @MockBean
     private PaymentServiceClient paymentServiceClient;
+
+    @MockBean
+    private OrderPaidPublisher orderPaidPublisher;
 
     @BeforeEach
     void setUp() {
