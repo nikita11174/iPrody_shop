@@ -21,18 +21,18 @@ spring:
       hibernate:
         format_sql: true
   rabbitmq:
-    username: admin
-    password: admin
-    addresses: amqp://localhost:5672
+    username: ${RABBITMQ_USER:admin}
+    password: ${RABBITMQ_PASS:admin}
+    addresses: ${RABBITMQ_ADDRESSES:amqp://localhost:5672}
   kafka:
-    bootstrap-servers: localhost:9093
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9093}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 clients:
   payment-service:
-    url: http://localhost:8082
+    url: ${PAYMENT_SERVICE_URL:http://localhost:8082}
 
 kafka:
   delivery:

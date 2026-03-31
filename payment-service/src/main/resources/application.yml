@@ -21,9 +21,9 @@ spring:
       hibernate:
         format_sql: true
   rabbitmq:
-    username: admin
-    password: admin
-    addresses: amqp://localhost:5672
+    username: ${RABBITMQ_USER:admin}
+    password: ${RABBITMQ_PASS:admin}
+    addresses: ${RABBITMQ_ADDRESSES:amqp://localhost:5672}
 
 rabbitmq:
   payment:

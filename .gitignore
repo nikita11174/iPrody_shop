@@ -34,3 +34,6 @@ AGENTS.md
 PROJECT_MAP.md
 WORKLOG.md
 .codex/
+
+# Environment — секреты и локальные переменные
+.env
