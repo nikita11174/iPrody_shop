@@ -3,7 +3,9 @@ package ru.iprody.orderservice.application;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +95,8 @@ public class OrderApplicationService {
                             paymentServiceMapper.toPaymentCreateRequest(order, createOrderPaymentCommand)
                     )
             );
+        } catch (RequestNotPermitted | BulkheadFullException exception) {
+            throw exception;
         } catch (RuntimeException exception) {
             throw new PaymentServiceException(
                     "Payment service request failed: " + exception.getMessage(),

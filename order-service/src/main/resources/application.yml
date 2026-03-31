@@ -36,6 +36,19 @@ resilience4j:
         ignoreExceptions:
           - java.lang.RuntimeException
 
+  ratelimiter:
+    instances:
+      paymentClientRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0s
+
+  bulkhead:
+    instances:
+      paymentClientBulkhead:
+        maxConcurrentCalls: 5
+        maxWaitDuration: 0s
+
   circuitbreaker:
     instances:
       paymentServiceCircuitBreaker:
