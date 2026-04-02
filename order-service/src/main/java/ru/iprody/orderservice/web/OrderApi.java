@@ -63,4 +63,14 @@ public interface OrderApi {
     @ResponseStatus(HttpStatus.CREATED)
     OrderPaymentResponse createPayment(@PathVariable("id") Long orderId,
                                        @RequestBody OrderPaymentRequest orderPaymentRequest);
+
+    @Operation(summary = "Отправить асинхронный запрос на оплату через RabbitMQ")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Запрос принят, платёж обрабатывается асинхронно"),
+            @ApiResponse(responseCode = "400", description = "Некорректный запрос"),
+            @ApiResponse(responseCode = "404", description = "Заказ не найден")
+    })
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    OrderResponse requestPaymentAsync(@PathVariable("id") Long orderId,
+                                      @RequestBody OrderPaymentRequest orderPaymentRequest);
 }
