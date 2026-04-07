@@ -4,24 +4,34 @@
 
 ## Архитектура
 
-- `order-service` - сервис заказов
-- `payment-service` - сервис платежей
-- `delivery-service` - сервис доставки
+- `order-service` — сервис заказов (порт 8081)
+- `payment-service` — сервис платежей (порт 8082)
+- `delivery-service` — сервис доставки (порт 8083)
 
-Каждый сервис запускается отдельно, имеет собственную H2 in-memory базу данных и предоставляет REST API для CRUD-операций.
+Каждый сервис запускается отдельно, имеет собственную H2 in-memory базу данных и предоставляет REST API.
 
 Во всех трёх сервисах слои разделены одинаково:
 
-- `web` отвечает за transport-модели и HTTP-контракт;
-- `web/mapper` переводит `Request/Response` в прикладные модели и обратно;
-- `application` работает с собственными `Command` и `Details`;
-- `domain` содержит aggregate root, entity, value object и repository интерфейсы.
+- `web` — REST-контроллеры, `*Request`/`*Response` DTO, WebMapper
+- `application` — ApplicationService, `*Command` (вход), `*Details` (выход)
+- `domain` — Aggregate Root, Entity, Value Object, Repository-интерфейсы
+- `integration` — Feign-клиенты и адаптеры (только `order-service`)
 
-Это даёт возможность менять внешний transport независимо от прикладного сценария: текущий REST API может быть дополнен новой версией API, WebSocket-обработчиком или consumer'ом сообщений без протаскивания transport DTO в application service.
+### Что реализовано
 
-Начиная с lesson-3, `order-service` умеет инициировать создание платежа в `payment-service` по REST через OpenFeign.
+| Урок | Тема | Что добавлено |
+|------|------|--------------|
+| 1 | Декомпозиция | Диаграммы bounded contexts в корне репозитория |
+| 2 | DDD | Три независимых CRUD-сервиса со слоёной архитектурой |
+| 3 | REST + OpenFeign | `order-service → payment-service` через Feign; OpenAPI/Swagger UI |
+| 4 | Idempotency Key | `IdempotencyFilter` + таблица `idempotency_keys`; заголовок `X-Idempotency-Key` |
+| 5 | Circuit Breaker & Retry | Resilience4j: `@Retry` + `@CircuitBreaker` в `PaymentClientAdapter` |
+| 6 | Rate Limiter & Bulkhead | Resilience4j: `@RateLimiter` + `@Bulkhead` (клиент); Bucket4j per-IP (сервер) |
+| 7 | Integration Tests | WireMock: `PaymentClientIntegrationTest` тестирует HTTP-контракт |
+| 8 | RabbitMQ | Async messaging: `order-service ↔ payment-service` через Direct Exchange |
+| 9 | Kafka + Docker | `order-service → delivery-service` через Kafka (KRaft); Dockerfile + docker-compose для всех сервисов |
 
-В корне репозитория также находятся диаграммы предметной области:
+В корне репозитория находятся диаграммы предметной области:
 
 - `Разбиение_по_бизнес_возможностям.svg`
 - `Разбиение_по_поддоменам_DDD.svg`
@@ -30,13 +40,18 @@
 
 - Java 17
 - Spring Boot 3.3.0
-- Spring Web
+- Spring Cloud 2023.0.2
 - OpenFeign
-- springdoc OpenAPI / Swagger UI
+- springdoc OpenAPI / Swagger UI 2.5.0
 - Spring Data JPA
 - H2 Database
+- Resilience4j 2.1.0
+- Bucket4j 8.7.0
+- Spring AMQP / RabbitMQ
+- Spring Kafka
 - Lombok
-- Maven
+- Maven 3.9+
+- Docker / docker-compose
 
 ## Структура репозитория
 
@@ -47,6 +62,7 @@
 ├── delivery-service/
 ├── postman/
 │   └── ddd-microservices.postman_collection.json
+├── docker-compose.yml
 ├── Разбиение_по_бизнес_возможностям.svg
 └── Разбиение_по_поддоменам_DDD.svg
 ```
@@ -58,8 +74,11 @@
 Назначение: управление жизненным циклом заказа.
 
 - Порт: `8081`
-- Базовый URL: `http://localhost:8081`
 - API: `/api/orders`
+- Оплата (sync): `POST /api/orders/{orderId}/payment`
+- Оплата (async via RabbitMQ): `POST /api/orders/{orderId}/payment/async` — 202 Accepted
+- После оплаты публикует событие `order.paid` в Kafka → delivery-service создаёт доставку
+- Swagger UI: `http://localhost:8081/swagger-ui/index.html`
 - H2 Console: `http://localhost:8081/h2-console`
 
 ### payment-service
@@ -67,8 +86,8 @@
 Назначение: создание и сопровождение платежей.
 
 - Порт: `8082`
-- Базовый URL: `http://localhost:8082`
-- API: `/api/payments`
+- API: `/api/payments` — требует заголовок `X-Idempotency-Key`
+- Swagger UI: `http://localhost:8082/swagger-ui/index.html`
 - H2 Console: `http://localhost:8082/h2-console`
 
 ### delivery-service
@@ -76,104 +95,70 @@
 Назначение: управление доставками и временными окнами доставки.
 
 - Порт: `8083`
-- Базовый URL: `http://localhost:8083`
 - API: `/api/deliveries`
+- Swagger UI: `http://localhost:8083/swagger-ui/index.html`
 - H2 Console: `http://localhost:8083/h2-console`
 
 ## Требования
 
 - JDK 17
 - Maven 3.9+
-
-Проверка окружения:
-
-```powershell
-java -version
-mvn -version
-```
+- Docker + Docker Compose
 
 ## Запуск
 
-### order-service
+### Docker (рекомендуется)
 
-```powershell
-cd order-service
-mvn spring-boot:run
+```bash
+docker compose up -d --build
 ```
 
-### payment-service
+Поднимает все сервисы + RabbitMQ + Kafka (KRaft) + Kafka UI (http://localhost:8090).
+
+### Локально (без Docker)
+
+Требуются запущенные RabbitMQ (порт 5672) и Kafka (порт 9093).
 
 ```powershell
-cd payment-service
-mvn spring-boot:run
-```
-
-### delivery-service
-
-```powershell
-cd delivery-service
-mvn spring-boot:run
+cd order-service && mvn spring-boot:run
+cd payment-service && mvn spring-boot:run
+cd delivery-service && mvn spring-boot:run
 ```
 
 ## Тесты
 
-### order-service
-
 ```powershell
-cd order-service
-mvn test
-```
-
-### payment-service
-
-```powershell
-cd payment-service
-mvn test
-```
-
-### delivery-service
-
-```powershell
-cd delivery-service
-mvn test
+cd order-service && mvn test
+cd payment-service && mvn test
 ```
 
 ## API
 
-Все сервисы поддерживают одинаковый набор CRUD-операций:
+Все сервисы поддерживают CRUD-операции:
 
-- `POST` создать запись
-- `GET /{resource}` получить список
-- `GET /{resource}/{id}` получить запись по идентификатору
-- `PUT /{resource}/{id}` обновить запись
-- `DELETE /{resource}/{id}` удалить запись
+- `POST /{resource}` — создать
+- `GET /{resource}` — список
+- `GET /{resource}/{id}` — по идентификатору
+- `PUT /{resource}/{id}` — обновить
+- `DELETE /{resource}/{id}` — удалить
 
-Конкретные ресурсы:
+Для ручной проверки: `postman/ddd-microservices.postman_collection.json`
 
-- `order-service` -> `/api/orders`
-- `payment-service` -> `/api/payments`
-- `delivery-service` -> `/api/deliveries`
-
-Для ручной проверки запросов можно использовать коллекцию:
-
-- `postman/ddd-microservices.postman_collection.json`
-
-Дополнительный сценарий lesson-3:
-
-- `order-service` -> `POST /api/orders/{orderId}/payment` создаёт платёж в `payment-service` через OpenFeign.
+> **Важно:** `POST /api/payments` требует заголовок `X-Idempotency-Key` (UUID).
 
 ## Хранение данных
 
 - каждый сервис использует отдельную H2 in-memory базу данных;
-- схема создается автоматически при старте приложения;
+- схема создаётся автоматически при старте;
 - данные хранятся только на время жизни процесса.
 
 ## Обработка ошибок
 
-Во всех сервисах реализована базовая обработка ошибки `not found` через единый JSON-ответ API.
-
-## Swagger UI
-
-- `order-service` -> `http://localhost:8081/swagger-ui/index.html`
-- `payment-service` -> `http://localhost:8082/swagger-ui/index.html`
-- `delivery-service` -> `http://localhost:8083/swagger-ui/index.html`
+| Код | Причина |
+|-----|---------|
+| 400 | Невалидный запрос / отсутствует `X-Idempotency-Key` |
+| 404 | Ресурс не найден |
+| 409 | Дублирующий запрос (повторный `X-Idempotency-Key`) |
+| 429 | Превышен rate limit (Bucket4j) |
+| 502 | Ошибка upstream payment-service |
+| 503 | Bulkhead или Circuit Breaker открыт |
