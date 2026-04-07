@@ -81,4 +81,19 @@ public class OrderController implements OrderApi {
                 )
         );
     }
+
+    @Override
+    @PostMapping("/{id}/payment/async")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public OrderResponse requestPaymentAsync(
+            @PathVariable("id") Long orderId,
+            @RequestBody OrderPaymentRequest orderPaymentRequest
+    ) {
+        return orderWebMapper.toOrderResponse(
+                orderApplicationService.requestPaymentAsync(
+                        orderId,
+                        orderWebMapper.toCreateOrderPaymentCommand(orderPaymentRequest)
+                )
+        );
+    }
 }

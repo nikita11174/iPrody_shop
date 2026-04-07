@@ -25,6 +25,7 @@ import ru.iprody.orderservice.domain.model.ShippingAddress;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
 import ru.iprody.orderservice.integration.payment.PaymentClientAdapter;
 import ru.iprody.orderservice.integration.payment.PaymentServiceMapper;
+import ru.iprody.orderservice.integration.payment.messaging.PaymentRequestPublisher;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class OrderApplicationService {
     private final OrderRepository orderRepository;
     private final PaymentClientAdapter paymentClientAdapter;
     private final PaymentServiceMapper paymentServiceMapper;
+    private final PaymentRequestPublisher paymentRequestPublisher;
 
     @Transactional
     @CircuitBreaker(name = "orderServiceCircuitBreaker")
@@ -103,6 +105,16 @@ public class OrderApplicationService {
                     exception
             );
         }
+    }
+
+    @Transactional
+    public OrderDetails requestPaymentAsync(Long orderId, CreateOrderPaymentCommand command) {
+        if (command == null || command.method() == null) {
+            throw new IllegalArgumentException("Payment method must be provided");
+        }
+        Order order = getOrder(orderId);
+        paymentRequestPublisher.publish(order, command);
+        return toOrderDetails(order);
     }
 
     private Order getOrder(Long orderId) {

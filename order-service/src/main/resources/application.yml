@@ -20,10 +20,21 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  rabbitmq:
+    username: admin
+    password: admin
+    addresses: amqp://localhost:5672
 
 clients:
   payment-service:
     url: http://localhost:8082
+
+rabbitmq:
+  payment:
+    exchange-request-name: payment-request-exchange
+    queue-request-name: payment-request-queue
+    exchange-result-name: payment-result-exchange
+    queue-result-name: payment-result-queue
 
 resilience4j:
   retry:
