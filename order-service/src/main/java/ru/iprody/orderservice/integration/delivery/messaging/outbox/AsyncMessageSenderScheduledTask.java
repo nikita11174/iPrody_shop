@@ -21,7 +21,7 @@ public class AsyncMessageSenderScheduledTask {
     public void sendOutboxMessages() {
         List<AsyncMessage> messages = asyncMessageService.getUnsentOutboxMessages(50);
         if (!messages.isEmpty()) {
-            log.debug("Outbox: found {} unsent message(s)", messages.size());
+            log.info("Outbox: found {} unsent message(s), processing...", messages.size());
         }
         for (AsyncMessage message : messages) {
             processor.sendMessage(message);
