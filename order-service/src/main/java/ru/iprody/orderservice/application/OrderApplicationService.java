@@ -20,11 +20,13 @@ import ru.iprody.orderservice.common.ResourceNotFoundException;
 import ru.iprody.orderservice.common.PaymentServiceException;
 import ru.iprody.orderservice.domain.model.Money;
 import ru.iprody.orderservice.domain.model.Order;
+import ru.iprody.orderservice.domain.model.OrderStatus;
 import ru.iprody.orderservice.domain.model.OrderItem;
 import ru.iprody.orderservice.domain.model.ShippingAddress;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
 import ru.iprody.orderservice.integration.payment.PaymentClientAdapter;
 import ru.iprody.orderservice.integration.payment.PaymentServiceMapper;
+import ru.iprody.orderservice.integration.delivery.messaging.OrderPaidPublisher;
 import ru.iprody.orderservice.integration.payment.messaging.PaymentRequestPublisher;
 
 @Service
@@ -36,6 +38,7 @@ public class OrderApplicationService {
     private final PaymentClientAdapter paymentClientAdapter;
     private final PaymentServiceMapper paymentServiceMapper;
     private final PaymentRequestPublisher paymentRequestPublisher;
+    private final OrderPaidPublisher orderPaidPublisher;
 
     @Transactional
     @CircuitBreaker(name = "orderServiceCircuitBreaker")
@@ -92,11 +95,14 @@ public class OrderApplicationService {
 
         Order order = getOrder(orderId);
         try {
-            return paymentServiceMapper.toOrderPaymentDetails(
+            OrderPaymentDetails details = paymentServiceMapper.toOrderPaymentDetails(
                     paymentClientAdapter.createPayment(
                             paymentServiceMapper.toPaymentCreateRequest(order, createOrderPaymentCommand)
                     )
             );
+            order.changeStatus(OrderStatus.PAID);
+            orderPaidPublisher.publish(order);
+            return details;
         } catch (RequestNotPermitted | BulkheadFullException exception) {
             throw exception;
         } catch (RuntimeException exception) {
