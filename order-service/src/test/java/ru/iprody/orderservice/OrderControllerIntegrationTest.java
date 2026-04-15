@@ -29,8 +29,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import ru.iprody.orderservice.application.payment.PaymentMethod;
 import ru.iprody.orderservice.application.payment.PaymentStatus;
 import ru.iprody.orderservice.domain.model.OrderStatus;
+import ru.iprody.orderservice.domain.model.outbox.AsyncMessage;
+import ru.iprody.orderservice.domain.model.outbox.AsyncMessageStatus;
+import ru.iprody.orderservice.domain.model.outbox.AsyncMessageType;
+import ru.iprody.orderservice.domain.repository.AsyncMessageRepository;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
-import ru.iprody.orderservice.integration.delivery.messaging.OrderPaidPublisher;
+import ru.iprody.orderservice.integration.delivery.messaging.outbox.AsyncMessageSenderProcessor;
 import ru.iprody.orderservice.integration.payment.PaymentServiceClient;
 import ru.iprody.orderservice.integration.payment.dto.PaymentAmountResponse;
 import ru.iprody.orderservice.integration.payment.dto.PaymentCreateResponse;
@@ -53,14 +57,18 @@ class OrderControllerIntegrationTest {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private AsyncMessageRepository asyncMessageRepository;
+
     @MockBean
     private PaymentServiceClient paymentServiceClient;
 
     @MockBean
-    private OrderPaidPublisher orderPaidPublisher;
+    private AsyncMessageSenderProcessor asyncMessageSenderProcessor;
 
     @BeforeEach
     void setUp() {
+        asyncMessageRepository.deleteAll();
         orderRepository.deleteAll();
     }
 
@@ -181,5 +189,50 @@ class OrderControllerIntegrationTest {
                                 && request.amount().amount().compareTo(new BigDecimal("83970.00")) == 0
                                 && "RUB".equals(request.amount().currency())
                 ));
+    }
+
+    @Test
+    void shouldSaveOutboxMessageOnPayment() throws Exception {
+        OrderRequest createOrderRequest = new OrderRequest();
+        createOrderRequest.setCustomerId(1L);
+        createOrderRequest.setStatus(OrderStatus.NEW);
+        createOrderRequest.setShippingAddress(new ShippingAddressRequest("Tverskaya 1", "Moscow", "125009", "RU"));
+        createOrderRequest.setItems(List.of(
+                new OrderItemRequest("Notebook", 1, new MoneyRequest(new BigDecimal("50000.00"), "RUB"))
+        ));
+
+        MvcResult createResult = mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createOrderRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        long orderId = objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asLong();
+
+        given(paymentServiceClient.createPayment(
+                any(String.class),
+                any()
+        )).willReturn(new PaymentCreateResponse(
+                1L, orderId, PaymentStatus.PENDING, PaymentMethod.CARD,
+                new PaymentAmountResponse(new BigDecimal("50000.00"), "RUB"),
+                LocalDateTime.now()
+        ));
+
+        OrderPaymentRequest paymentRequest = new OrderPaymentRequest();
+        paymentRequest.setMethod(PaymentMethod.CARD);
+
+        mockMvc.perform(post("/api/orders/{id}/payment", orderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(paymentRequest)))
+                .andExpect(status().isCreated());
+
+        List<AsyncMessage> messages = asyncMessageRepository.findAll();
+        org.assertj.core.api.Assertions.assertThat(messages).hasSize(1);
+
+        AsyncMessage saved = messages.get(0);
+        org.assertj.core.api.Assertions.assertThat(saved.getStatus()).isEqualTo(AsyncMessageStatus.CREATED);
+        org.assertj.core.api.Assertions.assertThat(saved.getType()).isEqualTo(AsyncMessageType.OUTBOX);
+        org.assertj.core.api.Assertions.assertThat(saved.getTopic()).isEqualTo("order.paid");
+        org.assertj.core.api.Assertions.assertThat(saved.getValue()).contains(String.valueOf(orderId));
     }
 }
