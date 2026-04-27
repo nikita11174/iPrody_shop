@@ -1,7 +1,11 @@
 package ru.iprody.orderservice.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -14,6 +18,7 @@ import ru.iprody.orderservice.application.dto.MoneyDetails;
 import ru.iprody.orderservice.application.dto.OrderDetails;
 import ru.iprody.orderservice.application.dto.OrderItemDetails;
 import ru.iprody.orderservice.application.dto.ShippingAddressDetails;
+import ru.iprody.orderservice.application.outbox.AsyncMessageService;
 import ru.iprody.orderservice.application.payment.CreateOrderPaymentCommand;
 import ru.iprody.orderservice.application.payment.OrderPaymentDetails;
 import ru.iprody.orderservice.common.ResourceNotFoundException;
@@ -23,10 +28,14 @@ import ru.iprody.orderservice.domain.model.Order;
 import ru.iprody.orderservice.domain.model.OrderStatus;
 import ru.iprody.orderservice.domain.model.OrderItem;
 import ru.iprody.orderservice.domain.model.ShippingAddress;
+import ru.iprody.orderservice.domain.model.outbox.AsyncMessage;
+import ru.iprody.orderservice.domain.model.outbox.AsyncMessageStatus;
+import ru.iprody.orderservice.domain.model.outbox.AsyncMessageType;
 import ru.iprody.orderservice.domain.repository.OrderRepository;
+import ru.iprody.orderservice.integration.delivery.messaging.config.KafkaDeliveryProperties;
+import ru.iprody.orderservice.integration.delivery.messaging.dto.OrderPaidMessage;
 import ru.iprody.orderservice.integration.payment.PaymentClientAdapter;
 import ru.iprody.orderservice.integration.payment.PaymentServiceMapper;
-import ru.iprody.orderservice.integration.delivery.messaging.OrderPaidPublisher;
 import ru.iprody.orderservice.integration.payment.messaging.PaymentRequestPublisher;
 
 @Service
@@ -38,7 +47,9 @@ public class OrderApplicationService {
     private final PaymentClientAdapter paymentClientAdapter;
     private final PaymentServiceMapper paymentServiceMapper;
     private final PaymentRequestPublisher paymentRequestPublisher;
-    private final OrderPaidPublisher orderPaidPublisher;
+    private final AsyncMessageService asyncMessageService;
+    private final KafkaDeliveryProperties kafkaDeliveryProperties;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     @CircuitBreaker(name = "orderServiceCircuitBreaker")
@@ -101,7 +112,7 @@ public class OrderApplicationService {
                     )
             );
             order.changeStatus(OrderStatus.PAID);
-            orderPaidPublisher.publish(order);
+            saveToOutbox(order);
             return details;
         } catch (RequestNotPermitted | BulkheadFullException exception) {
             throw exception;
@@ -121,6 +132,26 @@ public class OrderApplicationService {
         Order order = getOrder(orderId);
         paymentRequestPublisher.publish(order, command);
         return toOrderDetails(order);
+    }
+
+    private void saveToOutbox(Order order) {
+        try {
+            var payload = new OrderPaidMessage(
+                    order.getId(),
+                    order.getTotalAmount().getAmount(),
+                    order.getTotalAmount().getCurrency()
+            );
+            AsyncMessage message = AsyncMessage.builder()
+                    .id(UUID.randomUUID().toString())
+                    .topic(kafkaDeliveryProperties.orderPaidTopic())
+                    .value(objectMapper.writeValueAsString(payload))
+                    .type(AsyncMessageType.OUTBOX)
+                    .status(AsyncMessageStatus.CREATED)
+                    .build();
+            asyncMessageService.saveMessage(message);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize OrderPaidMessage for outbox", e);
+        }
     }
 
     private Order getOrder(Long orderId) {
