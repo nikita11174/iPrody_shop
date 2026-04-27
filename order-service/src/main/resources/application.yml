@@ -31,6 +31,18 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: order-consumers
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: "ru.iprody.orderservice.integration.delivery.messaging.dto.DeliveryCreatedMessage"
+    listener:
+      ack-mode: manual
 
 clients:
   payment-service:
@@ -39,6 +51,7 @@ clients:
 kafka:
   delivery:
     order-paid-topic: order.paid
+    delivery-created-topic: delivery.created
 
 rabbitmq:
   payment:
