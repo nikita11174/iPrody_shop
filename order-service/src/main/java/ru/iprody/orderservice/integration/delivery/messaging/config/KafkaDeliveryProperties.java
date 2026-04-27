@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "kafka.delivery")
 public record KafkaDeliveryProperties(
-        String orderPaidTopic
+        String orderPaidTopic,
+        String deliveryCreatedTopic
 ) {
 }

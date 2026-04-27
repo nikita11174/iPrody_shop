@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import ru.iprody.deliveryservice.domain.model.Delivery;
 import ru.iprody.deliveryservice.domain.model.DeliveryAddress;
@@ -47,7 +49,12 @@ public class OrderPaidListener {
                 saved.getId(),
                 saved.getStatus().name()
         );
-        kafkaTemplate.send(props.deliveryCreatedTopic(), message.orderId().toString(), result);
+        kafkaTemplate.send(MessageBuilder
+                .withPayload(result)
+                .setHeader(KafkaHeaders.TOPIC, props.deliveryCreatedTopic())
+                .setHeader(KafkaHeaders.KEY, message.orderId().toString())
+                .setHeader("X-Idempotency-Key", saved.getId().toString())
+                .build());
         log.info("Published DeliveryCreatedMessage for orderId={}", message.orderId());
     }
 }
